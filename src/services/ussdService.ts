@@ -8,6 +8,10 @@ const MOCK_USSD_CODES: USSDCode[] = [
     code: "*123#",
     description: "Check your account balance",
     category: "Balance Check",
+    simCard: "INWI",
+    device: "Samsung Galaxy S21",
+    operator: "INWI Morocco",
+    status: "active",
     created_at: new Date("2024-01-01"),
   },
   {
@@ -16,6 +20,10 @@ const MOCK_USSD_CODES: USSDCode[] = [
     code: "*131*4#",
     description: "Check your data balance",
     category: "Data Plans",
+    simCard: "ORANGE",
+    device: "iPhone 14 Pro",
+    operator: "Orange Morocco",
+    status: "active",
     created_at: new Date("2024-01-02"),
   },
   {
@@ -24,6 +32,10 @@ const MOCK_USSD_CODES: USSDCode[] = [
     code: "*131*1*1#",
     description: "Transfer airtime to another number",
     category: "Airtime",
+    simCard: "IAM",
+    device: "Google Pixel 7",
+    operator: "Maroc Telecom",
+    status: "inactive",
     created_at: new Date("2024-01-03"),
   },
 ];

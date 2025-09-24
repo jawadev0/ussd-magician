@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { USSDCode } from "@/types/ussd";
 
@@ -24,45 +24,70 @@ const CATEGORIES = [
 ];
 
 const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialogProps) => {
-  const [formData, setFormData] = useState({
-    name: editingCode?.name || "",
-    code: editingCode?.code || "",
-    description: editingCode?.description || "",
-    category: editingCode?.category || "",
+  const [formData, setFormData] = useState<{
+    name: string;
+    code: string;
+    description: string;
+    category: string;
+    simCard: 'INWI' | 'ORANGE' | 'IAM';
+    device: string;
+    operator: string;
+    status: 'active' | 'inactive' | 'pending';
+  }>({
+    name: "",
+    code: "",
+    description: "",
+    category: "",
+    simCard: "INWI",
+    device: "",
+    operator: "",
+    status: "active",
   });
 
-  const handleSave = () => {
-    if (formData.name && formData.code) {
-      onSave({
-        name: formData.name,
-        code: formData.code,
-        description: formData.description,
-        category: formData.category,
-        last_executed: editingCode?.last_executed,
+  useEffect(() => {
+    if (editingCode) {
+      setFormData({
+        name: editingCode.name,
+        code: editingCode.code,
+        description: editingCode.description || "",
+        category: editingCode.category || "",
+        simCard: editingCode.simCard,
+        device: editingCode.device,
+        operator: editingCode.operator,
+        status: editingCode.status,
       });
-      
-      // Reset form
+    } else {
       setFormData({
         name: "",
         code: "",
         description: "",
         category: "",
+        simCard: "INWI",
+        device: "",
+        operator: "",
+        status: "active",
       });
-      
+    }
+  }, [editingCode, open]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.name && formData.code && formData.simCard && formData.device && formData.operator) {
+      onSave(formData);
       onOpenChange(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {editingCode ? "Edit USSD Code" : "Add New USSD Code"}
           </DialogTitle>
         </DialogHeader>
         
-        <div className="grid gap-4 py-4">
+        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name *</Label>
             <Input
@@ -83,6 +108,56 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
               placeholder="e.g., *123#"
               required
             />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="simCard">SIM Card *</Label>
+            <Select value={formData.simCard} onValueChange={(value) => setFormData({ ...formData, simCard: value as 'INWI' | 'ORANGE' | 'IAM' })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select SIM card" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="INWI">INWI</SelectItem>
+                <SelectItem value="ORANGE">ORANGE</SelectItem>
+                <SelectItem value="IAM">IAM</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="device">Device *</Label>
+            <Input
+              id="device"
+              value={formData.device}
+              onChange={(e) => setFormData({ ...formData, device: e.target.value })}
+              placeholder="e.g., Samsung Galaxy S21"
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="operator">Operator *</Label>
+            <Input
+              id="operator"
+              value={formData.operator}
+              onChange={(e) => setFormData({ ...formData, operator: e.target.value })}
+              placeholder="e.g., INWI Morocco"
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="status">Status</Label>
+            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value as 'active' | 'inactive' | 'pending' })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="space-y-2">
@@ -114,13 +189,16 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
               rows={3}
             />
           </div>
-        </div>
+        </form>
         
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!formData.name || !formData.code}>
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!formData.name || !formData.code || !formData.simCard || !formData.device || !formData.operator}
+          >
             {editingCode ? "Update" : "Add"} Code
           </Button>
         </DialogFooter>

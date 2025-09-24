@@ -4,6 +4,10 @@ export interface USSDCode {
   code: string;
   description?: string;
   category?: string;
+  simCard: 'INWI' | 'ORANGE' | 'IAM';
+  device: string;
+  operator: string;
+  status: 'active' | 'inactive' | 'pending';
   created_at: Date;
   last_executed?: Date;
 }

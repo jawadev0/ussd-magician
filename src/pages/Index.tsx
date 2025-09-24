@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal } from "lucide-react";
+import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal, Edit, Trash2, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import USSDCard from "@/components/USSDCard";
 import AddUSSDDialog from "@/components/AddUSSDDialog";
 import { USSDCode, SIMStatus } from "@/types/ussd";
 import { ussdService } from "@/services/ussdService";
@@ -333,17 +333,73 @@ const Index = () => {
           </div>
         </div>
 
-        {/* USSD Codes Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCodes.map((code) => (
-            <USSDCard
-              key={code.id}
-              ussdCode={code}
-              onEdit={handleEditCode}
-              onDelete={handleDeleteCode}
-              onExecute={handleExecuteCode}
-            />
-          ))}
+        {/* USSD Codes Table */}
+        <div className="bg-card rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>SIM Card</TableHead>
+                <TableHead>Device</TableHead>
+                <TableHead>USSD Code</TableHead>
+                <TableHead>Operator</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCodes.map((code) => (
+                <TableRow key={code.id}>
+                  <TableCell className="font-medium">{code.id}</TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={code.simCard === 'INWI' ? 'default' : code.simCard === 'ORANGE' ? 'secondary' : 'outline'}
+                    >
+                      {code.simCard}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{code.device}</TableCell>
+                  <TableCell className="font-mono">{code.code}</TableCell>
+                  <TableCell>{code.operator}</TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={code.status === 'active' ? 'default' : code.status === 'inactive' ? 'destructive' : 'secondary'}
+                    >
+                      {code.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleExecuteCode(code.code)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Play className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditCode(code)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteCode(code.id)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
 
         {filteredCodes.length === 0 && (
