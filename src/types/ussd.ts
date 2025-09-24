@@ -5,10 +5,9 @@ export interface USSDCode {
   type: 'TOPUP' | 'ACTIVATION';
   description?: string;
   category?: string;
-  sim1: 'ORANGE' | 'INWI' | 'IAM';
-  sim2: 'ORANGE' | 'INWI' | 'IAM';
+  sim: 1 | 2;
+  operator: 'ORANGE' | 'INWI' | 'IAM';
   device: string;
-  operator: string;
   status: 'pending' | 'done' | 'failed';
   created_at: Date;
   last_executed?: Date;

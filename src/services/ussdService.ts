@@ -9,10 +9,9 @@ const MOCK_USSD_CODES: USSDCode[] = [
     type: "TOPUP",
     description: "Check your account balance",
     category: "Balance Check",
-    sim1: "INWI",
-    sim2: "ORANGE",
-    device: "Samsung Galaxy S21",
+    sim: 1,
     operator: "INWI",
+    device: "Samsung Galaxy S21",
     status: "done",
     created_at: new Date("2024-01-01"),
   },
@@ -23,10 +22,9 @@ const MOCK_USSD_CODES: USSDCode[] = [
     type: "ACTIVATION",
     description: "Check your data balance",
     category: "Data Plans",
-    sim1: "ORANGE",
-    sim2: "IAM",
-    device: "iPhone 14 Pro",
+    sim: 1,
     operator: "ORANGE",
+    device: "iPhone 14 Pro",
     status: "pending",
     created_at: new Date("2024-01-02"),
   },
@@ -37,10 +35,9 @@ const MOCK_USSD_CODES: USSDCode[] = [
     type: "TOPUP",
     description: "Transfer airtime to another number",
     category: "Airtime",
-    sim1: "IAM",
-    sim2: "INWI",
-    device: "Google Pixel 7",
+    sim: 2,
     operator: "IAM",
+    device: "Google Pixel 7",
     status: "failed",
     created_at: new Date("2024-01-03"),
   },
@@ -188,7 +185,9 @@ export const ussdService = {
   // Check if USSD can be executed on specific SIM
   canExecuteUSSD: (ussdCode: USSDCode, simNumber: 1 | 2, simStatus: DualSIMStatus): boolean => {
     const sim = simNumber === 1 ? simStatus.sim1 : simStatus.sim2;
-    const ussdSim = simNumber === 1 ? ussdCode.sim1 : ussdCode.sim2;
+    
+    // Check if this USSD code is assigned to this SIM
+    if (ussdCode.sim !== simNumber) return false;
     
     // Check if SIM is active
     if (!sim.isActive) return false;
@@ -197,9 +196,7 @@ export const ussdService = {
     if (sim.dailyOperations && sim.dailyOperations >= (sim.operationsLimit || 20)) return false;
     
     // Check if USSD operator matches SIM operator
-    const operatorMatch = (ussdCode.operator === sim.carrier) || 
-                         (ussdCode.operator.includes(sim.carrier || '')) ||
-                         (ussdSim === sim.carrier);
+    const operatorMatch = (ussdCode.operator === sim.carrier);
     
     return operatorMatch;
   },

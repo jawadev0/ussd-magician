@@ -432,8 +432,7 @@ const Index = () => {
               <TableRow>
                 <TableHead>ID</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>SIM 1</TableHead>
-                <TableHead>SIM 2</TableHead>
+                <TableHead>SIM</TableHead>
                 <TableHead>Device</TableHead>
                 <TableHead>USSD Code</TableHead>
                 <TableHead>Operator</TableHead>
@@ -453,25 +452,11 @@ const Index = () => {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Badge 
-                        variant={code.sim1 === 'INWI' ? 'default' : code.sim1 === 'ORANGE' ? 'secondary' : 'outline'}
+                        variant={code.operator === 'INWI' ? 'default' : code.operator === 'ORANGE' ? 'secondary' : 'outline'}
                       >
-                        {code.sim1}
+                        SIM {code.sim} - {code.operator}
                       </Badge>
-                      {simStatus && ussdService.canExecuteUSSD(code, 1, simStatus) ? (
-                        <span className="text-xs text-success">✓</span>
-                      ) : (
-                        <span className="text-xs text-destructive">✗</span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant={code.sim2 === 'INWI' ? 'default' : code.sim2 === 'ORANGE' ? 'secondary' : 'outline'}
-                      >
-                        {code.sim2}
-                      </Badge>
-                      {simStatus && ussdService.canExecuteUSSD(code, 2, simStatus) ? (
+                      {simStatus && ussdService.canExecuteUSSD(code, code.sim, simStatus) ? (
                         <span className="text-xs text-success">✓</span>
                       ) : (
                         <span className="text-xs text-destructive">✗</span>

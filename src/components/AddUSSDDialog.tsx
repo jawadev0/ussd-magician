@@ -30,10 +30,9 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
     type: 'TOPUP' | 'ACTIVATION';
     description: string;
     category: string;
-    sim1: 'ORANGE' | 'INWI' | 'IAM';
-    sim2: 'ORANGE' | 'INWI' | 'IAM';
+    sim: 1 | 2;
+    operator: 'ORANGE' | 'INWI' | 'IAM';
     device: string;
-    operator: string;
     status: 'pending' | 'done' | 'failed';
   }>({
     name: "",
@@ -41,10 +40,9 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
     type: "TOPUP",
     description: "",
     category: "",
-    sim1: "INWI",
-    sim2: "ORANGE",
+    sim: 1,
+    operator: "INWI",
     device: "",
-    operator: "",
     status: "pending",
   });
 
@@ -56,23 +54,21 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
         type: editingCode.type,
         description: editingCode.description || "",
         category: editingCode.category || "",
-        sim1: editingCode.sim1,
-        sim2: editingCode.sim2,
-        device: editingCode.device,
+        sim: editingCode.sim,
         operator: editingCode.operator,
+        device: editingCode.device,
         status: editingCode.status,
       });
-    } else {
+    } else if (open) {
       setFormData({
         name: "",
         code: "",
         type: "TOPUP",
         description: "",
         category: "",
-        sim1: "INWI",
-        sim2: "ORANGE",
+        sim: 1,
+        operator: "INWI",
         device: "",
-        operator: "",
         status: "pending",
       });
     }
@@ -80,8 +76,18 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.name && formData.code && formData.sim1 && formData.sim2 && formData.device && formData.operator) {
-      onSave(formData);
+    if (formData.name && formData.code && formData.device) {
+      onSave({
+        name: formData.name,
+        code: formData.code,
+        type: formData.type,
+        description: formData.description,
+        category: formData.category,
+        sim: formData.sim,
+        operator: formData.operator,
+        device: formData.device,
+        status: formData.status,
+      });
       onOpenChange(false);
     }
   };
@@ -132,24 +138,23 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="sim1">SIM 1 *</Label>
-            <Select value={formData.sim1} onValueChange={(value) => setFormData({ ...formData, sim1: value as 'ORANGE' | 'INWI' | 'IAM' })}>
+            <Label htmlFor="sim">SIM *</Label>
+            <Select value={formData.sim.toString()} onValueChange={(value) => setFormData({ ...formData, sim: parseInt(value) as 1 | 2 })}>
               <SelectTrigger>
-                <SelectValue placeholder="Select SIM 1" />
+                <SelectValue placeholder="Select SIM" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="INWI">INWI</SelectItem>
-                <SelectItem value="ORANGE">ORANGE</SelectItem>
-                <SelectItem value="IAM">IAM</SelectItem>
+                <SelectItem value="1">SIM 1</SelectItem>
+                <SelectItem value="2">SIM 2</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="sim2">SIM 2 *</Label>
-            <Select value={formData.sim2} onValueChange={(value) => setFormData({ ...formData, sim2: value as 'ORANGE' | 'INWI' | 'IAM' })}>
+            <Label htmlFor="operator">Operator *</Label>
+            <Select value={formData.operator} onValueChange={(value) => setFormData({ ...formData, operator: value as 'ORANGE' | 'INWI' | 'IAM' })}>
               <SelectTrigger>
-                <SelectValue placeholder="Select SIM 2" />
+                <SelectValue placeholder="Select operator" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="INWI">INWI</SelectItem>
@@ -166,17 +171,6 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
               value={formData.device}
               onChange={(e) => setFormData({ ...formData, device: e.target.value })}
               placeholder="e.g., Samsung Galaxy S21"
-              required
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="operator">Operator *</Label>
-            <Input
-              id="operator"
-              value={formData.operator}
-              onChange={(e) => setFormData({ ...formData, operator: e.target.value })}
-              placeholder="e.g., INWI Morocco"
               required
             />
           </div>
@@ -232,7 +226,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={!formData.name || !formData.code || !formData.sim1 || !formData.sim2 || !formData.device || !formData.operator}
+            disabled={!formData.name || !formData.code || !formData.device}
           >
             {editingCode ? "Update" : "Add"} Code
           </Button>
