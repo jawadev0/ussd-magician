@@ -1,4 +1,4 @@
-import { USSDCode, USSDExecutionResponse, SIMStatus } from "@/types/ussd";
+import { USSDCode, USSDExecutionResponse, SIMStatus, DualSIMStatus } from "@/types/ussd";
 
 // Mock database for demo - replace with actual Supabase integration
 const MOCK_USSD_CODES: USSDCode[] = [
@@ -126,7 +126,7 @@ export const ussdService = {
   },
 
   // Get SIM status
-  getSIMStatus: async (): Promise<SIMStatus> => {
+  getSIMStatus: async (): Promise<DualSIMStatus> => {
     try {
       // Simulate checking SIM status
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -134,31 +134,50 @@ export const ussdService = {
       if ((window as any).Capacitor) {
         // In a real implementation, this would use Capacitor plugins to check SIM status
         return {
-          isActive: true,
-          carrier: "Vodafone",
-          phoneNumber: "+1234567890",
-          signalStrength: 85,
-          networkType: "4G LTE"
+          sim1: {
+            isActive: true,
+            carrier: "INWI",
+            phoneNumber: "+212-6-12-34-56-78",
+            signalStrength: 85,
+            networkType: "4G LTE"
+          },
+          sim2: {
+            isActive: false,
+            carrier: "ORANGE",
+            phoneNumber: "+212-6-87-65-43-21",
+            signalStrength: 70,
+            networkType: "4G LTE"
+          }
         };
       } else {
         // Browser simulation
         return {
-          isActive: true,
-          carrier: "Simulated Carrier",
-          phoneNumber: "+1234567890",
-          signalStrength: 75,
-          networkType: "4G LTE"
+          sim1: {
+            isActive: true,
+            carrier: "INWI",
+            phoneNumber: "+212-6-12-34-56-78",
+            signalStrength: 75,
+            networkType: "4G LTE"
+          },
+          sim2: {
+            isActive: true,
+            carrier: "ORANGE",
+            phoneNumber: "+212-6-87-65-43-21",
+            signalStrength: 60,
+            networkType: "3G"
+          }
         };
       }
     } catch (error) {
       return {
-        isActive: false
+        sim1: { isActive: false },
+        sim2: { isActive: false }
       };
     }
   },
 
   // Activate SIM
-  activateSIM: async (): Promise<boolean> => {
+  activateSIM: async (simNumber: 1 | 2): Promise<boolean> => {
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
       return true;
@@ -168,7 +187,7 @@ export const ussdService = {
   },
 
   // Deactivate SIM
-  deactivateSIM: async (): Promise<boolean> => {
+  deactivateSIM: async (simNumber: 1 | 2): Promise<boolean> => {
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
       return true;

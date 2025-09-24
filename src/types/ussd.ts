@@ -35,3 +35,8 @@ export interface SIMStatus {
   signalStrength?: number;
   networkType?: string;
 }
+
+export interface DualSIMStatus {
+  sim1: SIMStatus;
+  sim2: SIMStatus;
+}
