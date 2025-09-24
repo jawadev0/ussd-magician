@@ -143,8 +143,6 @@ export const ussdService = {
             isActive: true,
             carrier: "INWI",
             phoneNumber: "+212-6-12-34-56-78",
-            signalStrength: 85,
-            networkType: "4G LTE",
             dailyOperations: 5,
             operationsLimit: 20,
             lastResetDate: today
@@ -153,8 +151,6 @@ export const ussdService = {
             isActive: false,
             carrier: "ORANGE",
             phoneNumber: "+212-6-87-65-43-21",
-            signalStrength: 70,
-            networkType: "4G LTE",
             dailyOperations: 20,
             operationsLimit: 20,
             lastResetDate: today
@@ -167,8 +163,6 @@ export const ussdService = {
             isActive: true,
             carrier: "INWI",
             phoneNumber: "+212-6-12-34-56-78",
-            signalStrength: 75,
-            networkType: "4G LTE",
             dailyOperations: 12,
             operationsLimit: 20,
             lastResetDate: today
@@ -177,8 +171,6 @@ export const ussdService = {
             isActive: true,
             carrier: "ORANGE",
             phoneNumber: "+212-6-87-65-43-21",
-            signalStrength: 60,
-            networkType: "3G",
             dailyOperations: 8,
             operationsLimit: 20,
             lastResetDate: today

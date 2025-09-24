@@ -33,8 +33,6 @@ export interface SIMStatus {
   isActive: boolean;
   carrier?: string;
   phoneNumber?: string;
-  signalStrength?: number;
-  networkType?: string;
   dailyOperations?: number;
   operationsLimit?: number;
   lastResetDate?: string;

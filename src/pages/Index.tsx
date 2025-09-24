@@ -284,15 +284,6 @@ const Index = () => {
                     <span className="font-medium">Phone:</span> {simStatus.sim1.phoneNumber}
                   </div>
                 )}
-                
-                <div className="flex gap-4 text-sm text-muted-foreground">
-                  {simStatus.sim1.signalStrength && (
-                    <span>Signal: {simStatus.sim1.signalStrength}%</span>
-                  )}
-                  {simStatus.sim1.networkType && (
-                    <span>Network: {simStatus.sim1.networkType}</span>
-                  )}
-                </div>
               </div>
 
               {/* SIM 2 */}
@@ -359,15 +350,6 @@ const Index = () => {
                     <span className="font-medium">Phone:</span> {simStatus.sim2.phoneNumber}
                   </div>
                 )}
-                
-                <div className="flex gap-4 text-sm text-muted-foreground">
-                  {simStatus.sim2.signalStrength && (
-                    <span>Signal: {simStatus.sim2.signalStrength}%</span>
-                  )}
-                  {simStatus.sim2.networkType && (
-                    <span>Network: {simStatus.sim2.networkType}</span>
-                  )}
-                </div>
               </div>
             </div>
           </div>
