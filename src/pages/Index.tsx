@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal, Edit, Trash2, Play } from "lucide-react";
+import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal, Edit, Trash2, Play, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import AddUSSDDialog from "@/components/AddUSSDDialog";
 import { USSDCode, DualSIMStatus } from "@/types/ussd";
 import { ussdService } from "@/services/ussdService";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const [ussdCodes, setUssdCodes] = useState<USSDCode[]>([]);
@@ -19,6 +20,7 @@ const Index = () => {
   const [simStatus, setSimStatus] = useState<DualSIMStatus | null>(null);
   const [simLoading, setSimLoading] = useState({ sim1: false, sim2: false });
   const { toast } = useToast();
+  const { user, logout } = useAuth();
 
   const categories = ["All", ...new Set(ussdCodes.map(code => code.category).filter(Boolean))];
 
@@ -223,7 +225,8 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
               <Button onClick={() => {
                 setEditingCode(null);
                 setDialogOpen(true);
@@ -232,14 +235,31 @@ const Index = () => {
                 Add Code
               </Button>
               
-              <Button 
-                variant="outline" 
-                onClick={handleClearPending}
-                disabled={loading || !ussdCodes.some(code => code.status === 'pending')}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Clear Pending
-              </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={handleClearPending}
+                  disabled={loading || !ussdCodes.some(code => code.status === 'pending')}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Clear Pending
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-foreground">Welcome, {user?.username}</p>
+                  <p className="text-xs text-muted-foreground">Authorized user</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={logout}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </div>
             </div>
           </div>
         </div>
