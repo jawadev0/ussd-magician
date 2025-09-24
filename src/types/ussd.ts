@@ -7,7 +7,7 @@ export interface USSDCode {
   simCard: 'INWI' | 'ORANGE' | 'IAM';
   device: string;
   operator: string;
-  status: 'active' | 'inactive' | 'pending';
+  status: 'pending' | 'done' | 'failed';
   created_at: Date;
   last_executed?: Date;
 }

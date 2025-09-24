@@ -11,7 +11,7 @@ const MOCK_USSD_CODES: USSDCode[] = [
     simCard: "INWI",
     device: "Samsung Galaxy S21",
     operator: "INWI Morocco",
-    status: "active",
+    status: "done",
     created_at: new Date("2024-01-01"),
   },
   {
@@ -23,7 +23,7 @@ const MOCK_USSD_CODES: USSDCode[] = [
     simCard: "ORANGE",
     device: "iPhone 14 Pro",
     operator: "Orange Morocco",
-    status: "active",
+    status: "pending",
     created_at: new Date("2024-01-02"),
   },
   {
@@ -35,7 +35,7 @@ const MOCK_USSD_CODES: USSDCode[] = [
     simCard: "IAM",
     device: "Google Pixel 7",
     operator: "Maroc Telecom",
-    status: "inactive",
+    status: "failed",
     created_at: new Date("2024-01-03"),
   },
 ];

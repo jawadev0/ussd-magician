@@ -32,7 +32,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
     simCard: 'INWI' | 'ORANGE' | 'IAM';
     device: string;
     operator: string;
-    status: 'active' | 'inactive' | 'pending';
+    status: 'pending' | 'done' | 'failed';
   }>({
     name: "",
     code: "",
@@ -41,7 +41,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
     simCard: "INWI",
     device: "",
     operator: "",
-    status: "active",
+    status: "pending",
   });
 
   useEffect(() => {
@@ -65,7 +65,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
         simCard: "INWI",
         device: "",
         operator: "",
-        status: "active",
+        status: "pending",
       });
     }
   }, [editingCode, open]);
@@ -148,14 +148,14 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
           
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
-            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value as 'active' | 'inactive' | 'pending' })}>
+            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value as 'pending' | 'done' | 'failed' })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="done">Done</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
               </SelectContent>
             </Select>
           </div>

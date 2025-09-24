@@ -363,7 +363,7 @@ const Index = () => {
                   <TableCell>{code.operator}</TableCell>
                   <TableCell>
                     <Badge 
-                      variant={code.status === 'active' ? 'default' : code.status === 'inactive' ? 'destructive' : 'secondary'}
+                      variant={code.status === 'done' ? 'default' : code.status === 'failed' ? 'destructive' : 'secondary'}
                     >
                       {code.status}
                     </Badge>
