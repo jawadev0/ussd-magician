@@ -1,4 +1,4 @@
-import { USSDCode, USSDExecutionResponse } from "@/types/ussd";
+import { USSDCode, USSDExecutionResponse, SIMStatus } from "@/types/ussd";
 
 // Mock database for demo - replace with actual Supabase integration
 const MOCK_USSD_CODES: USSDCode[] = [
@@ -107,6 +107,58 @@ export const ussdService = {
         success: false,
         error: `Failed to execute USSD code: ${error instanceof Error ? error.message : 'Unknown error'}`
       };
+    }
+  },
+
+  // Get SIM status
+  getSIMStatus: async (): Promise<SIMStatus> => {
+    try {
+      // Simulate checking SIM status
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if ((window as any).Capacitor) {
+        // In a real implementation, this would use Capacitor plugins to check SIM status
+        return {
+          isActive: true,
+          carrier: "Vodafone",
+          phoneNumber: "+1234567890",
+          signalStrength: 85,
+          networkType: "4G LTE"
+        };
+      } else {
+        // Browser simulation
+        return {
+          isActive: true,
+          carrier: "Simulated Carrier",
+          phoneNumber: "+1234567890",
+          signalStrength: 75,
+          networkType: "4G LTE"
+        };
+      }
+    } catch (error) {
+      return {
+        isActive: false
+      };
+    }
+  },
+
+  // Activate SIM
+  activateSIM: async (): Promise<boolean> => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  },
+
+  // Deactivate SIM
+  deactivateSIM: async (): Promise<boolean> => {
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      return true;
+    } catch (error) {
+      return false;
     }
   }
 };

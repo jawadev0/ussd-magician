@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Plus, Smartphone, Database, Zap } from "lucide-react";
+import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import USSDCard from "@/components/USSDCard";
 import AddUSSDDialog from "@/components/AddUSSDDialog";
-import { USSDCode } from "@/types/ussd";
+import { USSDCode, SIMStatus } from "@/types/ussd";
 import { ussdService } from "@/services/ussdService";
 
 const Index = () => {
@@ -16,12 +16,15 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCode, setEditingCode] = useState<USSDCode | null>(null);
+  const [simStatus, setSimStatus] = useState<SIMStatus | null>(null);
+  const [simLoading, setSimLoading] = useState(false);
   const { toast } = useToast();
 
   const categories = ["All", ...new Set(ussdCodes.map(code => code.category).filter(Boolean))];
 
   useEffect(() => {
     loadUSSDCodes();
+    loadSIMStatus();
   }, []);
 
   const loadUSSDCodes = async () => {
@@ -37,6 +40,67 @@ const Index = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSIMStatus = async () => {
+    try {
+      const status = await ussdService.getSIMStatus();
+      setSimStatus(status);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load SIM status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleActivateSIM = async () => {
+    try {
+      setSimLoading(true);
+      const success = await ussdService.activateSIM();
+      if (success) {
+        setSimStatus(prev => prev ? { ...prev, isActive: true } : null);
+        toast({
+          title: "Success",
+          description: "SIM activated successfully",
+        });
+      } else {
+        throw new Error("Activation failed");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to activate SIM",
+        variant: "destructive",
+      });
+    } finally {
+      setSimLoading(false);
+    }
+  };
+
+  const handleDeactivateSIM = async () => {
+    try {
+      setSimLoading(true);
+      const success = await ussdService.deactivateSIM();
+      if (success) {
+        setSimStatus(prev => prev ? { ...prev, isActive: false } : null);
+        toast({
+          title: "Success",
+          description: "SIM deactivated successfully",
+        });
+      } else {
+        throw new Error("Deactivation failed");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to deactivate SIM",
+        variant: "destructive",
+      });
+    } finally {
+      setSimLoading(false);
     }
   };
 
@@ -145,6 +209,60 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 space-y-6">
+        {/* SIM Status Card */}
+        {simStatus && (
+          <div className="bg-card rounded-lg border p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className={`flex items-center justify-center w-12 h-12 rounded-lg ${
+                  simStatus.isActive ? 'bg-success/10' : 'bg-destructive/10'
+                }`}>
+                  <Signal className={`h-6 w-6 ${
+                    simStatus.isActive ? 'text-success' : 'text-destructive'
+                  }`} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">SIM Status</h2>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span className={`font-medium ${
+                      simStatus.isActive ? 'text-success' : 'text-destructive'
+                    }`}>
+                      {simStatus.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                    {simStatus.carrier && <span>• {simStatus.carrier}</span>}
+                    {simStatus.signalStrength && <span>• {simStatus.signalStrength}% Signal</span>}
+                    {simStatus.networkType && <span>• {simStatus.networkType}</span>}
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-2">
+                {simStatus.isActive ? (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDeactivateSIM}
+                    disabled={simLoading}
+                  >
+                    <PowerOff className="h-4 w-4 mr-2" />
+                    {simLoading ? "Deactivating..." : "Deactivate"}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="success"
+                    size="sm"
+                    onClick={handleActivateSIM}
+                    disabled={simLoading}
+                  >
+                    <Power className="h-4 w-4 mr-2" />
+                    {simLoading ? "Activating..." : "Activate"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-card rounded-lg border p-4">
@@ -173,12 +291,18 @@ const Index = () => {
           
           <div className="bg-card rounded-lg border p-4">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-10 h-10 bg-success/10 rounded-lg">
-                <Smartphone className="h-5 w-5 text-success" />
+              <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${
+                simStatus?.isActive ? 'bg-success/10' : 'bg-destructive/10'
+              }`}>
+                <Smartphone className={`h-5 w-5 ${
+                  simStatus?.isActive ? 'text-success' : 'text-destructive'
+                }`} />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">Ready</p>
-                <p className="text-sm text-muted-foreground">Status</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {simStatus?.isActive ? 'Active' : 'Inactive'}
+                </p>
+                <p className="text-sm text-muted-foreground">SIM Status</p>
               </div>
             </div>
           </div>

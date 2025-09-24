@@ -22,3 +22,11 @@ export interface USSDExecutionResponse {
   result?: string;
   error?: string;
 }
+
+export interface SIMStatus {
+  isActive: boolean;
+  carrier?: string;
+  phoneNumber?: string;
+  signalStrength?: number;
+  networkType?: string;
+}
