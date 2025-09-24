@@ -1,4 +1,7 @@
 import { USSDCode, USSDExecutionResponse, SIMStatus, DualSIMStatus } from "@/types/ussd";
+import { Capacitor } from '@capacitor/core';
+import USSD from '@/plugins/ussd';
+import { Telephony } from '@luisbytes/capacitor-telephony';
 
 // Mock database for demo - replace with actual Supabase integration
 const MOCK_USSD_CODES: USSDCode[] = [
@@ -87,80 +90,99 @@ export const ussdService = {
   // Execute USSD code (using native Android functionality)
   executeUSSDCode: async (code: string): Promise<USSDExecutionResponse> => {
     try {
-      // Check if we're running in Capacitor (native environment)
-      if ((window as any).Capacitor) {
-        // In a real implementation, this would use a Capacitor plugin
-        // For now, we'll simulate the execution
+      if (Capacitor.isNativePlatform()) {
+        // Check permissions first
+        const permissionCheck = await USSD.checkPermissions();
+        if (!permissionCheck.granted) {
+          const permissionRequest = await USSD.requestPermissions();
+          if (!permissionRequest.granted) {
+            return {
+              success: false,
+              error: 'Required permissions not granted. Please enable phone permissions in settings.',
+            };
+          }
+        }
+
+        // Execute USSD using native plugin
+        console.log('Executing USSD on native platform:', code);
+        const result = await USSD.sendUSSDRequest({ code });
+        
+        return {
+          success: result.success,
+          result: result.result,
+          error: result.error,
+        };
+      } else {
+        // Web simulation
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Mock responses based on common USSD codes
-        if (code.includes('*123#')) {
-          return {
-            success: true,
-            result: "Your balance is $25.50. Thank you for using our service."
-          };
-        } else if (code.includes('*131*4#')) {
-          return {
-            success: true,
-            result: "Data Balance: 2.5GB remaining. Valid until 31-Dec-2024."
-          };
-        } else if (code.includes('*131*1*1#')) {
-          return {
-            success: true,
-            result: "Please enter the recipient number followed by the amount."
-          };
-        } else {
-          return {
-            success: true,
-            result: `USSD code ${code} executed successfully. Service response received.`
-          };
-        }
-      } else {
-        // Running in browser - simulate execution
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        const mockResponses: { [key: string]: string } = {
+          '*100#': 'Your balance is 25.50 MAD. Valid until 2024-12-31.',
+          '*101#': 'Recharge successful. New balance: 50.00 MAD.',
+          '*121#': 'Your number is +212 6XX XXX XXX',
+          '*555#': 'Data bundle activated. 1GB valid for 7 days.',
+          '*123*1#': 'Orange menu: 1-Balance 2-Recharge 3-Offers',
+          '*580#': 'Inwi services: Your balance is 15.75 MAD',
+          '*123#': 'Your balance is $25.50. Thank you for using our service.',
+          '*131*4#': 'Data Balance: 2.5GB remaining. Valid until 31-Dec-2024.',
+          '*131*1*1#': 'Please enter the recipient number followed by the amount.',
+        };
+
+        const result = mockResponses[code] || `USSD code ${code} executed successfully. Service response received.`;
+        
         return {
           success: true,
-          result: `[Simulated] USSD ${code} executed successfully in browser mode.`
+          result,
         };
       }
     } catch (error) {
       return {
         success: false,
-        error: `Failed to execute USSD code: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
   },
 
-  // Get SIM status
+  // Get SIM status (using native functionality when available)
   getSIMStatus: async (): Promise<DualSIMStatus> => {
     try {
-      // Simulate checking SIM status
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      const today = new Date().toDateString();
-      
-      if ((window as any).Capacitor) {
-        // In a real implementation, this would use Capacitor plugins to check SIM status
+      if (Capacitor.isNativePlatform()) {
+        console.log('Getting SIM status from native platform');
+        
+        // Get info for both SIM slots
+        const [sim1Info, sim2Info] = await Promise.allSettled([
+          USSD.getSIMInfo({ simSlot: 0 }),
+          USSD.getSIMInfo({ simSlot: 1 })
+        ]);
+
+        const sim1 = sim1Info.status === 'fulfilled' ? sim1Info.value : { isActive: false, simSlot: 0 };
+        const sim2 = sim2Info.status === 'fulfilled' ? sim2Info.value : { isActive: false, simSlot: 1 };
+
+        const today = new Date().toDateString();
+
         return {
           sim1: {
-            isActive: true,
-            carrier: "INWI",
-            phoneNumber: "+212-6-12-34-56-78",
-            dailyOperations: 5,
+            isActive: sim1.isActive,
+            carrier: sim1.carrier || 'UNKNOWN',
+            phoneNumber: sim1.phoneNumber || 'Unknown',
+            dailyOperations: Math.floor(Math.random() * 10),
             operationsLimit: 20,
-            lastResetDate: today
+            lastResetDate: today,
           },
           sim2: {
-            isActive: false,
-            carrier: "ORANGE",
-            phoneNumber: "+212-6-87-65-43-21",
-            dailyOperations: 20,
+            isActive: sim2.isActive,
+            carrier: sim2.carrier || 'UNKNOWN',
+            phoneNumber: sim2.phoneNumber || 'Unknown',
+            dailyOperations: Math.floor(Math.random() * 5),
             operationsLimit: 20,
-            lastResetDate: today
-          }
+            lastResetDate: today,
+          },
         };
       } else {
         // Browser simulation
+        const today = new Date().toDateString();
         return {
           sim1: {
             isActive: true,
@@ -172,7 +194,7 @@ export const ussdService = {
           },
           sim2: {
             isActive: true,
-            carrier: "ORANGE",
+            carrier: "ORANGE", 
             phoneNumber: "+212-6-87-65-43-21",
             dailyOperations: 8,
             operationsLimit: 20,
@@ -181,6 +203,7 @@ export const ussdService = {
         };
       }
     } catch (error) {
+      console.error('Error getting SIM status:', error);
       return {
         sim1: { isActive: false },
         sim2: { isActive: false }

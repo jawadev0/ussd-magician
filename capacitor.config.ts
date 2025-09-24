@@ -22,7 +22,8 @@ const config: CapacitorConfig = {
       'ACCESS_NETWORK_STATE',
       'ACCESS_WIFI_STATE',
       'READ_SMS',
-      'SEND_SMS'
+      'SEND_SMS',
+      'READ_BASIC_PHONE_STATE'
     ]
   }
 };
