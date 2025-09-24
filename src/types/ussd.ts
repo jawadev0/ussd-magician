@@ -2,6 +2,7 @@ export interface USSDCode {
   id: string;
   name: string;
   code: string;
+  type: 'TOPUP' | 'ACTIVATION';
   description?: string;
   category?: string;
   sim1: 'ORANGE' | 'INWI' | 'IAM';
@@ -34,6 +35,9 @@ export interface SIMStatus {
   phoneNumber?: string;
   signalStrength?: number;
   networkType?: string;
+  dailyOperations?: number;
+  operationsLimit?: number;
+  lastResetDate?: string;
 }
 
 export interface DualSIMStatus {

@@ -6,12 +6,13 @@ const MOCK_USSD_CODES: USSDCode[] = [
     id: "1",
     name: "Check Balance",
     code: "*123#",
+    type: "TOPUP",
     description: "Check your account balance",
     category: "Balance Check",
     sim1: "INWI",
     sim2: "ORANGE",
     device: "Samsung Galaxy S21",
-    operator: "INWI Morocco",
+    operator: "INWI",
     status: "done",
     created_at: new Date("2024-01-01"),
   },
@@ -19,12 +20,13 @@ const MOCK_USSD_CODES: USSDCode[] = [
     id: "2", 
     name: "Data Balance",
     code: "*131*4#",
+    type: "ACTIVATION",
     description: "Check your data balance",
     category: "Data Plans",
     sim1: "ORANGE",
     sim2: "IAM",
     device: "iPhone 14 Pro",
-    operator: "Orange Morocco",
+    operator: "ORANGE",
     status: "pending",
     created_at: new Date("2024-01-02"),
   },
@@ -32,12 +34,13 @@ const MOCK_USSD_CODES: USSDCode[] = [
     id: "3",
     name: "Airtime Transfer",
     code: "*131*1*1#",
+    type: "TOPUP",
     description: "Transfer airtime to another number",
     category: "Airtime",
     sim1: "IAM",
     sim2: "INWI",
     device: "Google Pixel 7",
-    operator: "Maroc Telecom",
+    operator: "IAM",
     status: "failed",
     created_at: new Date("2024-01-03"),
   },
@@ -131,6 +134,8 @@ export const ussdService = {
       // Simulate checking SIM status
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      const today = new Date().toDateString();
+      
       if ((window as any).Capacitor) {
         // In a real implementation, this would use Capacitor plugins to check SIM status
         return {
@@ -139,14 +144,20 @@ export const ussdService = {
             carrier: "INWI",
             phoneNumber: "+212-6-12-34-56-78",
             signalStrength: 85,
-            networkType: "4G LTE"
+            networkType: "4G LTE",
+            dailyOperations: 5,
+            operationsLimit: 20,
+            lastResetDate: today
           },
           sim2: {
             isActive: false,
             carrier: "ORANGE",
             phoneNumber: "+212-6-87-65-43-21",
             signalStrength: 70,
-            networkType: "4G LTE"
+            networkType: "4G LTE",
+            dailyOperations: 20,
+            operationsLimit: 20,
+            lastResetDate: today
           }
         };
       } else {
@@ -157,14 +168,20 @@ export const ussdService = {
             carrier: "INWI",
             phoneNumber: "+212-6-12-34-56-78",
             signalStrength: 75,
-            networkType: "4G LTE"
+            networkType: "4G LTE",
+            dailyOperations: 12,
+            operationsLimit: 20,
+            lastResetDate: today
           },
           sim2: {
             isActive: true,
             carrier: "ORANGE",
             phoneNumber: "+212-6-87-65-43-21",
             signalStrength: 60,
-            networkType: "3G"
+            networkType: "3G",
+            dailyOperations: 8,
+            operationsLimit: 20,
+            lastResetDate: today
           }
         };
       }
@@ -174,6 +191,25 @@ export const ussdService = {
         sim2: { isActive: false }
       };
     }
+  },
+
+  // Check if USSD can be executed on specific SIM
+  canExecuteUSSD: (ussdCode: USSDCode, simNumber: 1 | 2, simStatus: DualSIMStatus): boolean => {
+    const sim = simNumber === 1 ? simStatus.sim1 : simStatus.sim2;
+    const ussdSim = simNumber === 1 ? ussdCode.sim1 : ussdCode.sim2;
+    
+    // Check if SIM is active
+    if (!sim.isActive) return false;
+    
+    // Check daily operations limit
+    if (sim.dailyOperations && sim.dailyOperations >= (sim.operationsLimit || 20)) return false;
+    
+    // Check if USSD operator matches SIM operator
+    const operatorMatch = (ussdCode.operator === sim.carrier) || 
+                         (ussdCode.operator.includes(sim.carrier || '')) ||
+                         (ussdSim === sim.carrier);
+    
+    return operatorMatch;
   },
 
   // Activate SIM

@@ -27,6 +27,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
   const [formData, setFormData] = useState<{
     name: string;
     code: string;
+    type: 'TOPUP' | 'ACTIVATION';
     description: string;
     category: string;
     sim1: 'ORANGE' | 'INWI' | 'IAM';
@@ -37,6 +38,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
   }>({
     name: "",
     code: "",
+    type: "TOPUP",
     description: "",
     category: "",
     sim1: "INWI",
@@ -51,6 +53,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
       setFormData({
         name: editingCode.name,
         code: editingCode.code,
+        type: editingCode.type,
         description: editingCode.description || "",
         category: editingCode.category || "",
         sim1: editingCode.sim1,
@@ -63,6 +66,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
       setFormData({
         name: "",
         code: "",
+        type: "TOPUP",
         description: "",
         category: "",
         sim1: "INWI",
@@ -112,6 +116,19 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
               placeholder="e.g., *123#"
               required
             />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="type">Type *</Label>
+            <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value as 'TOPUP' | 'ACTIVATION' })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="TOPUP">TOPUP</SelectItem>
+                <SelectItem value="ACTIVATION">ACTIVATION</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="space-y-2">

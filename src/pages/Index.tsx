@@ -245,6 +245,14 @@ const Index = () => {
                           </Badge>
                         )}
                       </div>
+                      {simStatus.sim1.dailyOperations !== undefined && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Operations: {simStatus.sim1.dailyOperations}/{simStatus.sim1.operationsLimit || 20}
+                          {(simStatus.sim1.dailyOperations >= (simStatus.sim1.operationsLimit || 20)) && (
+                            <span className="text-destructive ml-1">(Limit reached)</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -312,6 +320,14 @@ const Index = () => {
                           </Badge>
                         )}
                       </div>
+                      {simStatus.sim2.dailyOperations !== undefined && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Operations: {simStatus.sim2.dailyOperations}/{simStatus.sim2.operationsLimit || 20}
+                          {(simStatus.sim2.dailyOperations >= (simStatus.sim2.operationsLimit || 20)) && (
+                            <span className="text-destructive ml-1">(Limit reached)</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -433,6 +449,7 @@ const Index = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
+                <TableHead>Type</TableHead>
                 <TableHead>SIM 1</TableHead>
                 <TableHead>SIM 2</TableHead>
                 <TableHead>Device</TableHead>
@@ -447,18 +464,37 @@ const Index = () => {
                 <TableRow key={code.id}>
                   <TableCell className="font-medium">{code.id}</TableCell>
                   <TableCell>
-                    <Badge 
-                      variant={code.sim1 === 'INWI' ? 'default' : code.sim1 === 'ORANGE' ? 'secondary' : 'outline'}
-                    >
-                      {code.sim1}
+                    <Badge variant={code.type === 'TOPUP' ? 'default' : 'secondary'}>
+                      {code.type}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge 
-                      variant={code.sim2 === 'INWI' ? 'default' : code.sim2 === 'ORANGE' ? 'secondary' : 'outline'}
-                    >
-                      {code.sim2}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge 
+                        variant={code.sim1 === 'INWI' ? 'default' : code.sim1 === 'ORANGE' ? 'secondary' : 'outline'}
+                      >
+                        {code.sim1}
+                      </Badge>
+                      {simStatus && ussdService.canExecuteUSSD(code, 1, simStatus) ? (
+                        <span className="text-xs text-success">✓</span>
+                      ) : (
+                        <span className="text-xs text-destructive">✗</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Badge 
+                        variant={code.sim2 === 'INWI' ? 'default' : code.sim2 === 'ORANGE' ? 'secondary' : 'outline'}
+                      >
+                        {code.sim2}
+                      </Badge>
+                      {simStatus && ussdService.canExecuteUSSD(code, 2, simStatus) ? (
+                        <span className="text-xs text-success">✓</span>
+                      ) : (
+                        <span className="text-xs text-destructive">✗</span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{code.device}</TableCell>
                   <TableCell className="font-mono">{code.code}</TableCell>
