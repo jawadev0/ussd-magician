@@ -4,7 +4,8 @@ export interface USSDCode {
   code: string;
   description?: string;
   category?: string;
-  simCard: 'INWI' | 'ORANGE' | 'IAM';
+  sim1: 'ORANGE' | 'INWI' | 'IAM';
+  sim2: 'ORANGE' | 'INWI' | 'IAM';
   device: string;
   operator: string;
   status: 'pending' | 'done' | 'failed';

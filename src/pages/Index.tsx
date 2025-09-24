@@ -339,7 +339,8 @@ const Index = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
-                <TableHead>SIM Card</TableHead>
+                <TableHead>SIM 1</TableHead>
+                <TableHead>SIM 2</TableHead>
                 <TableHead>Device</TableHead>
                 <TableHead>USSD Code</TableHead>
                 <TableHead>Operator</TableHead>
@@ -353,9 +354,16 @@ const Index = () => {
                   <TableCell className="font-medium">{code.id}</TableCell>
                   <TableCell>
                     <Badge 
-                      variant={code.simCard === 'INWI' ? 'default' : code.simCard === 'ORANGE' ? 'secondary' : 'outline'}
+                      variant={code.sim1 === 'INWI' ? 'default' : code.sim1 === 'ORANGE' ? 'secondary' : 'outline'}
                     >
-                      {code.simCard}
+                      {code.sim1}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge 
+                      variant={code.sim2 === 'INWI' ? 'default' : code.sim2 === 'ORANGE' ? 'secondary' : 'outline'}
+                    >
+                      {code.sim2}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{code.device}</TableCell>
