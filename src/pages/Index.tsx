@@ -163,6 +163,27 @@ const Index = () => {
     return await ussdService.executeUSSDCode(code);
   };
 
+  // Clear pending operations
+  const handleClearPending = async () => {
+    setLoading(true);
+    try {
+      await ussdService.clearPendingOperations();
+      await loadUSSDCodes();
+      toast({
+        title: "Success",
+        description: "All pending operations have been cleared.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to clear pending operations.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredCodes = ussdCodes.filter(code => {
     const matchesSearch = code.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          code.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -202,13 +223,24 @@ const Index = () => {
               </div>
             </div>
             
-            <Button onClick={() => {
-              setEditingCode(null);
-              setDialogOpen(true);
-            }}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Code
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => {
+                setEditingCode(null);
+                setDialogOpen(true);
+              }}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Code
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={handleClearPending}
+                disabled={loading || !ussdCodes.some(code => code.status === 'pending')}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Clear Pending
+              </Button>
+            </div>
           </div>
         </div>
       </header>

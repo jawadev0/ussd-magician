@@ -78,6 +78,12 @@ export const ussdService = {
     ussdCodes = ussdCodes.filter(code => code.id !== id);
   },
 
+  // Clear all pending operations
+  clearPendingOperations: async (): Promise<void> => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    ussdCodes = ussdCodes.filter(code => code.status !== 'pending');
+  },
+
   // Execute USSD code (using native Android functionality)
   executeUSSDCode: async (code: string): Promise<USSDExecutionResponse> => {
     try {
