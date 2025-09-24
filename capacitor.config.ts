@@ -14,6 +14,16 @@ const config: CapacitorConfig = {
       backgroundColor: "#3b82f6",
       showSpinner: false
     }
+  },
+  android: {
+    permissions: [
+      'CALL_PHONE',
+      'READ_PHONE_STATE',
+      'ACCESS_NETWORK_STATE',
+      'ACCESS_WIFI_STATE',
+      'READ_SMS',
+      'SEND_SMS'
+    ]
   }
 };
 
