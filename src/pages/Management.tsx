@@ -112,12 +112,30 @@ const Management = () => {
   const handleToggleDevice = async (deviceId: string, currentStatus: string) => {
     try {
       setDeviceLoading(prev => ({ ...prev, [deviceId]: true }));
-      // Simulate device toggle
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({
-        title: "Success",
-        description: `Device ${currentStatus === 'online' ? 'deactivated' : 'activated'} successfully`,
-      });
+      
+      const isGoingOnline = currentStatus !== 'online';
+      
+      // Toggle device status
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Also toggle all SIM cards based on device status
+      if (isGoingOnline) {
+        // Activate both SIM cards
+        await handleActivateSIM(1);
+        await handleActivateSIM(2);
+        toast({
+          title: "Success",
+          description: "Device and all SIM cards activated successfully",
+        });
+      } else {
+        // Deactivate both SIM cards
+        await handleDeactivateSIM(1);
+        await handleDeactivateSIM(2);
+        toast({
+          title: "Success",
+          description: "Device and all SIM cards deactivated successfully",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
