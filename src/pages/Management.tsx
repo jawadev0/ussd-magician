@@ -213,6 +213,19 @@ const Management = () => {
     device.location.toLowerCase().includes(searchTerms.devices.toLowerCase())
   );
 
+  // Filter SIM cards based on search
+  const shouldShowSIM1 = !searchTerms.simcards || 
+    (simStatus?.sim1.phoneNumber && simStatus.sim1.phoneNumber.toLowerCase().includes(searchTerms.simcards.toLowerCase())) ||
+    (simStatus?.sim1.carrier && simStatus.sim1.carrier.toLowerCase().includes(searchTerms.simcards.toLowerCase())) ||
+    'sim 1'.includes(searchTerms.simcards.toLowerCase()) ||
+    'main device'.toLowerCase().includes(searchTerms.simcards.toLowerCase());
+
+  const shouldShowSIM2 = !searchTerms.simcards || 
+    (simStatus?.sim2.phoneNumber && simStatus.sim2.phoneNumber.toLowerCase().includes(searchTerms.simcards.toLowerCase())) ||
+    (simStatus?.sim2.carrier && simStatus.sim2.carrier.toLowerCase().includes(searchTerms.simcards.toLowerCase())) ||
+    'sim 2'.includes(searchTerms.simcards.toLowerCase()) ||
+    'main device'.toLowerCase().includes(searchTerms.simcards.toLowerCase());
+
   const handleDeactivateSIM = async (simNumber: 1 | 2) => {
     try {
       setSimLoading(prev => ({ ...prev, [`sim${simNumber}`]: true }));
@@ -747,6 +760,13 @@ const Management = () => {
                           </TableCell>
                         </TableRow>
                       ))}
+                      {filteredActivationCodes.length === 0 && searchTerms.activation && (
+                        <TableRow>
+                          <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                            No activation codes found matching "{searchTerms.activation}"
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -874,6 +894,13 @@ const Management = () => {
                           </TableCell>
                         </TableRow>
                       ))}
+                      {filteredTopupCodes.length === 0 && searchTerms.topup && (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            No top-up codes found matching "{searchTerms.topup}"
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>
@@ -1022,7 +1049,8 @@ const Management = () => {
                     <TableBody>
                       {simStatus && (
                         <>
-                          <TableRow>
+                          {shouldShowSIM1 && (
+                            <TableRow>
                             <TableCell className="font-medium">
                               {simStatus.sim1.phoneNumber || "+212 6XX XXX XXX"}
                             </TableCell>
@@ -1093,8 +1121,10 @@ const Management = () => {
                                 <Button variant="ghost" size="sm" className="text-destructive">Remove</Button>
                               </div>
                             </TableCell>
-                          </TableRow>
-                          <TableRow>
+                            </TableRow>
+                          )}
+                          {shouldShowSIM2 && (
+                            <TableRow>
                             <TableCell className="font-medium">
                               {simStatus.sim2.phoneNumber || "+212 7XX XXX XXX"}
                             </TableCell>
@@ -1165,8 +1195,16 @@ const Management = () => {
                                 <Button variant="ghost" size="sm" className="text-destructive">Remove</Button>
                               </div>
                             </TableCell>
-                          </TableRow>
+                            </TableRow>
+                          )}
                         </>
+                      )}
+                      {(!shouldShowSIM1 && !shouldShowSIM2) && searchTerms.simcards && (
+                        <TableRow>
+                          <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
+                            No SIM cards found matching "{searchTerms.simcards}"
+                          </TableCell>
+                        </TableRow>
                       )}
                     </TableBody>
                   </Table>
