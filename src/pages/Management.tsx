@@ -79,6 +79,31 @@ const Management = () => {
     }
   ]);
 
+  // Mock users data
+  const [users] = useState([
+    {
+      id: '1',
+      username: 'admin',
+      role: 'Admin',
+      status: 'Active',
+      lastLogin: '2024-01-20 10:30'
+    },
+    {
+      id: '2',
+      username: 'operator1',
+      role: 'Operator',
+      status: 'Active',
+      lastLogin: '2024-01-19 15:20'
+    },
+    {
+      id: '3',
+      username: 'viewer1',
+      role: 'Viewer',
+      status: 'Inactive',
+      lastLogin: '2024-01-18 09:15'
+    }
+  ]);
+
   // Mock devices data - in real app this would come from API
   const [devices] = useState([
     {
@@ -211,6 +236,13 @@ const Management = () => {
     device.id.toLowerCase().includes(searchTerms.devices.toLowerCase()) ||
     device.type.toLowerCase().includes(searchTerms.devices.toLowerCase()) ||
     device.location.toLowerCase().includes(searchTerms.devices.toLowerCase())
+  );
+
+  // Filter users based on search
+  const filteredUsers = users.filter(user =>
+    user.username.toLowerCase().includes(searchTerms.users.toLowerCase()) ||
+    user.role.toLowerCase().includes(searchTerms.users.toLowerCase()) ||
+    user.status.toLowerCase().includes(searchTerms.users.toLowerCase())
   );
 
   // Filter SIM cards based on search
@@ -649,6 +681,17 @@ const Management = () => {
                 </CardContent>
               </Card>
             ))}
+            
+            {/* Empty state for devices */}
+            {filteredDevices.length === 0 && searchTerms.devices && (
+              <Card>
+                <CardContent className="py-8">
+                  <div className="text-center text-muted-foreground">
+                    No devices found matching "{searchTerms.devices}"
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* USSD Activation Tab */}
@@ -959,20 +1002,39 @@ const Management = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell className="font-medium">admin</TableCell>
-                        <TableCell>
-                          <Badge>Admin</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="default">Active</Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">2024-01-20 10:30</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm" className="text-destructive">Disable</Button>
-                        </TableCell>
-                      </TableRow>
+                      {filteredUsers.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell className="font-medium">{user.username}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.role === 'Admin' ? 'default' : user.role === 'Operator' ? 'secondary' : 'outline'}>
+                              {user.role}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={user.status === 'Active' ? 'default' : 'destructive'}>
+                              {user.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">{user.lastLogin}</TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <Button variant="ghost" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-destructive">
+                                {user.status === 'Active' ? 'Disable' : 'Enable'}
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {filteredUsers.length === 0 && searchTerms.users && (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                            No users found matching "{searchTerms.users}"
+                          </TableCell>
+                        </TableRow>
+                      )}
                     </TableBody>
                   </Table>
                 </div>
