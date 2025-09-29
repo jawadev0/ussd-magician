@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal, Edit, Trash2, Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal, Edit, Trash2, Play, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +11,7 @@ import { USSDCode, DualSIMStatus } from "@/types/ussd";
 import { ussdService } from "@/services/ussdService";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [ussdCodes, setUssdCodes] = useState<USSDCode[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -240,6 +242,14 @@ const Index = () => {
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Clear Pending
+                </Button>
+
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate("/management")}
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Management
                 </Button>
               </div>
             </div>
