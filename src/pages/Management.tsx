@@ -16,7 +16,11 @@ import { ussdService } from "@/services/ussdService";
 const Management = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("devices");
+  
+  // Get tab from URL params
+  const [searchParams] = useState(() => new URLSearchParams(window.location.search));
+  const initialTab = searchParams.get('tab') || 'devices';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [simStatus, setSimStatus] = useState<DualSIMStatus | null>(null);
   const [simLoading, setSimLoading] = useState({ sim1: false, sim2: false });
   const [deviceLoading, setDeviceLoading] = useState({ device1: false });

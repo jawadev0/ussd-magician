@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal, Edit, Trash2, Play, Settings } from "lucide-react";
+import { Plus, Smartphone, Database, Zap, Power, PowerOff, Signal, Edit, Trash2, Play, Settings, Users, CreditCard, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -244,13 +245,38 @@ const Index = () => {
                   Clear Pending
                 </Button>
 
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate("/management")}
-                >
-                  <Settings className="h-4 w-4 mr-2" />
-                  Management
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Management
+                      <ChevronDown className="h-4 w-4 ml-2" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => navigate("/management?tab=activation")}>
+                      <Zap className="h-4 w-4 mr-2" />
+                      USSD Activation
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/management?tab=topup")}>
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      USSD Top-up
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate("/management?tab=users")}>
+                      <Users className="h-4 w-4 mr-2" />
+                      Users
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/management?tab=devices")}>
+                      <Smartphone className="h-4 w-4 mr-2" />
+                      Devices & SIM Cards
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/management?tab=simcards")}>
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      SIM Card Settings
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
