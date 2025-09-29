@@ -32,6 +32,14 @@ const Management = () => {
     sim: '',
     description: ''
   });
+
+  const [topupForm, setTopupForm] = useState({
+    code: '',
+    operator: '',
+    sim: '',
+    amount: '',
+    description: ''
+  });
   
   const [activationCodes, setActivationCodes] = useState([
     {
@@ -84,6 +92,43 @@ const Management = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleAddTopupCode = () => {
+    if (!topupForm.code || !topupForm.operator || !topupForm.sim || !topupForm.amount) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newCode = {
+      id: Date.now().toString(),
+      code: topupForm.code,
+      operator: topupForm.operator,
+      sim: topupForm.sim,
+      status: 'pending',
+      amount: topupForm.amount,
+      description: topupForm.description
+    };
+
+    setTopupCodes(prev => [...prev, newCode]);
+    setTopupForm({ code: '', operator: '', sim: '', amount: '', description: '' });
+    
+    toast({
+      title: "Success",
+      description: "Top-up code added successfully",
+    });
+  };
+
+  const handleDeleteTopupCode = (id: string) => {
+    setTopupCodes(prev => prev.filter(code => code.id !== id));
+    toast({
+      title: "Success",
+      description: "Top-up code deleted successfully",
+    });
   };
 
   const handleActivateSIM = async (simNumber: 1 | 2) => {
@@ -637,18 +682,27 @@ const Management = () => {
                 <CardDescription>Manage top-up codes and transactions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <div className="space-y-2">
-                    <Label>Top-up Code</Label>
-                    <Input placeholder="*555*123456789#" />
+                    <Label>Top-up Code *</Label>
+                    <Input 
+                      placeholder="*555*123456789#" 
+                      value={topupForm.code}
+                      onChange={(e) => setTopupForm(prev => ({ ...prev, code: e.target.value }))}
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label>Amount</Label>
-                    <Input type="number" placeholder="100" />
+                    <Label>Amount (MAD) *</Label>
+                    <Input 
+                      type="number" 
+                      placeholder="100" 
+                      value={topupForm.amount}
+                      onChange={(e) => setTopupForm(prev => ({ ...prev, amount: e.target.value }))}
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label>Operator</Label>
-                    <Select>
+                    <Label>Operator *</Label>
+                    <Select value={topupForm.operator} onValueChange={(value) => setTopupForm(prev => ({ ...prev, operator: value }))}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select operator" />
                       </SelectTrigger>
@@ -659,14 +713,38 @@ const Management = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label>SIM Slot *</Label>
+                    <Select value={topupForm.sim} onValueChange={(value) => setTopupForm(prev => ({ ...prev, sim: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select SIM" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="SIM 1">SIM 1</SelectItem>
+                        <SelectItem value="SIM 2">SIM 2</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Input 
+                      placeholder="Mobile credit, etc." 
+                      value={topupForm.description}
+                      onChange={(e) => setTopupForm(prev => ({ ...prev, description: e.target.value }))}
+                    />
+                  </div>
                 </div>
-                <Button>Add Top-up Code</Button>
+                <Button onClick={handleAddTopupCode}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Top-up Code
+                </Button>
 
                 <div className="border rounded-lg">
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead>Code</TableHead>
+                        <TableHead>Description</TableHead>
                         <TableHead>Amount</TableHead>
                         <TableHead>Operator</TableHead>
                         <TableHead>SIM</TableHead>
@@ -678,6 +756,7 @@ const Management = () => {
                       {topupCodes.map((code) => (
                         <TableRow key={code.id}>
                           <TableCell className="font-mono">{code.code}</TableCell>
+                          <TableCell className="text-muted-foreground">{code.description || '-'}</TableCell>
                           <TableCell>{code.amount} MAD</TableCell>
                           <TableCell>
                             <Badge variant={code.operator === 'INWI' ? 'default' : code.operator === 'ORANGE' ? 'secondary' : 'outline'}>
@@ -693,7 +772,12 @@ const Management = () => {
                               <Button variant="ghost" size="sm">
                                 <Edit className="h-4 w-4" />
                               </Button>
-                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-destructive hover:text-destructive"
+                                onClick={() => handleDeleteTopupCode(code.id)}
+                              >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
