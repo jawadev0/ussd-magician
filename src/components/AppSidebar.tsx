@@ -1,4 +1,4 @@
-import { Smartphone, CreditCard, Zap, Users, Home } from "lucide-react";
+import { Smartphone, CreditCard, Zap, Users, Home, Phone } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 import {
@@ -19,6 +19,7 @@ const items = [
   { title: "SIM Cards", url: "/simcards", icon: CreditCard },
   { title: "Activation", url: "/activation", icon: Zap },
   { title: "Top-up", url: "/topup", icon: CreditCard },
+  { title: "USSD Activation", url: "/ussd-activation", icon: Phone },
   { title: "Users", url: "/users", icon: Users },
 ];
 
