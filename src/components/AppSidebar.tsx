@@ -27,24 +27,30 @@ export function AppSidebar() {
   const { open } = useSidebar();
 
   return (
-    <Sidebar className={open ? "w-60" : "w-14"}>
-      <SidebarContent>
+    <Sidebar className={`${open ? "w-60" : "w-14"} border-r border-border/50 bg-card/50 backdrop-blur-sm`}>
+      <SidebarContent className="py-6">
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {open && "Navigation"}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1 px-2">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="hover:bg-accent/50 transition-all duration-200">
                     <NavLink 
                       to={item.url} 
                       end
                       className={({ isActive }) =>
-                        isActive ? "bg-muted text-primary font-medium" : "hover:bg-muted/50"
+                        `flex items-center gap-3 rounded-lg px-3 py-2 ${
+                          isActive 
+                            ? "bg-primary text-primary-foreground font-medium shadow-md" 
+                            : "text-foreground/80 hover:text-foreground"
+                        }`
                       }
                     >
-                      <item.icon className="h-4 w-4" />
-                      {open && <span>{item.title}</span>}
+                      <item.icon className="h-5 w-5 flex-shrink-0" />
+                      {open && <span className="text-sm">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

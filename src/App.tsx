@@ -28,8 +28,13 @@ const App = () => (
             <div className="flex min-h-screen w-full">
               <AppSidebar />
               <div className="flex-1 flex flex-col w-full">
-                <header className="h-12 flex items-center border-b bg-card sticky top-0 z-40">
-                  <SidebarTrigger className="ml-2" />
+                <header className="h-14 flex items-center border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-40">
+                  <SidebarTrigger className="ml-3" />
+                  <div className="ml-4">
+                    <h2 className="text-sm font-semibold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                      USSD Manager
+                    </h2>
+                  </div>
                 </header>
                 <main className="flex-1">
                   <Routes>
