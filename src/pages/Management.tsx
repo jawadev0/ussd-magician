@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Settings, Users, Smartphone, CreditCard, Zap, ArrowLeft, Power, PowerOff, Signal, Wifi, WifiOff, Plus, Edit, Trash2 } from "lucide-react";
+import { Settings, Users, Smartphone, CreditCard, Zap, ArrowLeft, Power, PowerOff, Signal, Wifi, WifiOff, Plus, Edit, Trash2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +29,15 @@ const Management = () => {
   const [simFeatures, setSimFeatures] = useState({
     sim1: { topup: true, activation: true },
     sim2: { topup: false, activation: true }
+  });
+
+  // Search states
+  const [searchTerms, setSearchTerms] = useState({
+    activation: '',
+    topup: '',
+    users: '',
+    devices: '',
+    simcards: ''
   });
 
   // Form states
@@ -180,6 +189,29 @@ const Management = () => {
       description: `${feature.charAt(0).toUpperCase() + feature.slice(1)} ${isEnabled ? 'enabled' : 'disabled'} for SIM ${simNumber}`,
     });
   };
+
+  // Filter functions
+  const filteredActivationCodes = activationCodes.filter(code =>
+    code.code.toLowerCase().includes(searchTerms.activation.toLowerCase()) ||
+    code.operator.toLowerCase().includes(searchTerms.activation.toLowerCase()) ||
+    code.sim.toLowerCase().includes(searchTerms.activation.toLowerCase()) ||
+    (code.description && code.description.toLowerCase().includes(searchTerms.activation.toLowerCase()))
+  );
+
+  const filteredTopupCodes = topupCodes.filter(code =>
+    code.code.toLowerCase().includes(searchTerms.topup.toLowerCase()) ||
+    code.operator.toLowerCase().includes(searchTerms.topup.toLowerCase()) ||
+    code.sim.toLowerCase().includes(searchTerms.topup.toLowerCase()) ||
+    code.amount.toLowerCase().includes(searchTerms.topup.toLowerCase()) ||
+    (code.description && code.description.toLowerCase().includes(searchTerms.topup.toLowerCase()))
+  );
+
+  const filteredDevices = devices.filter(device =>
+    device.name.toLowerCase().includes(searchTerms.devices.toLowerCase()) ||
+    device.id.toLowerCase().includes(searchTerms.devices.toLowerCase()) ||
+    device.type.toLowerCase().includes(searchTerms.devices.toLowerCase()) ||
+    device.location.toLowerCase().includes(searchTerms.devices.toLowerCase())
+  );
 
   const handleDeactivateSIM = async (simNumber: 1 | 2) => {
     try {
@@ -389,7 +421,22 @@ const Management = () => {
             </div>
 
             {/* Devices with SIM Cards */}
-            {devices.map((device) => (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search devices by name, ID, type, or location..."
+                    value={searchTerms.devices}
+                    onChange={(e) => setSearchTerms(prev => ({ ...prev, devices: e.target.value }))}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Devices with SIM Cards */}
+            {filteredDevices.map((device) => (
               <Card key={device.id}>
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -647,6 +694,16 @@ const Management = () => {
                   Add Activation Code
                 </Button>
 
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search activation codes..."
+                    value={searchTerms.activation}
+                    onChange={(e) => setSearchTerms(prev => ({ ...prev, activation: e.target.value }))}
+                    className="pl-10"
+                  />
+                </div>
+
                 <div className="border rounded-lg">
                   <Table>
                     <TableHeader>
@@ -660,7 +717,7 @@ const Management = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {activationCodes.map((code) => (
+                      {filteredActivationCodes.map((code) => (
                         <TableRow key={code.id}>
                           <TableCell className="font-mono">{code.code}</TableCell>
                           <TableCell className="text-muted-foreground">{code.description || '-'}</TableCell>
@@ -762,6 +819,16 @@ const Management = () => {
                   Add Top-up Code
                 </Button>
 
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search top-up codes..."
+                    value={searchTerms.topup}
+                    onChange={(e) => setSearchTerms(prev => ({ ...prev, topup: e.target.value }))}
+                    className="pl-10"
+                  />
+                </div>
+
                 <div className="border rounded-lg">
                   <Table>
                     <TableHeader>
@@ -776,7 +843,7 @@ const Management = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {topupCodes.map((code) => (
+                      {filteredTopupCodes.map((code) => (
                         <TableRow key={code.id}>
                           <TableCell className="font-mono">{code.code}</TableCell>
                           <TableCell className="text-muted-foreground">{code.description || '-'}</TableCell>
@@ -842,6 +909,16 @@ const Management = () => {
                   </div>
                 </div>
                 <Button>Add User</Button>
+
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search users by username or role..."
+                    value={searchTerms.users}
+                    onChange={(e) => setSearchTerms(prev => ({ ...prev, users: e.target.value }))}
+                    className="pl-10"
+                  />
+                </div>
 
                 <div className="border rounded-lg">
                   <Table>
@@ -916,6 +993,16 @@ const Management = () => {
                   </div>
                 </div>
                 <Button>Add SIM Card</Button>
+
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search SIM cards by phone, operator, or device..."
+                    value={searchTerms.simcards}
+                    onChange={(e) => setSearchTerms(prev => ({ ...prev, simcards: e.target.value }))}
+                    className="pl-10"
+                  />
+                </div>
 
                 <div className="border rounded-lg">
                   <Table>
