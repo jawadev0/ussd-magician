@@ -923,6 +923,7 @@ const Management = () => {
                       <TableRow>
                         <TableHead>Phone Number</TableHead>
                         <TableHead>Operator</TableHead>
+                        <TableHead>Device</TableHead>
                         <TableHead>Slot</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Daily Ops</TableHead>
@@ -942,6 +943,14 @@ const Management = () => {
                               <Badge variant={simStatus.sim1.carrier === 'INWI' ? 'default' : simStatus.sim1.carrier === 'ORANGE' ? 'secondary' : 'outline'}>
                                 {simStatus.sim1.carrier || 'INWI'}
                               </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center justify-center w-6 h-6 bg-primary/10 rounded">
+                                  <Smartphone className="h-3 w-3 text-primary" />
+                                </div>
+                                <span className="text-sm font-medium">Main Device</span>
+                              </div>
                             </TableCell>
                             <TableCell>SIM 1</TableCell>
                             <TableCell>
@@ -1006,6 +1015,14 @@ const Management = () => {
                               <Badge variant={simStatus.sim2.carrier === 'INWI' ? 'default' : simStatus.sim2.carrier === 'ORANGE' ? 'secondary' : 'outline'}>
                                 {simStatus.sim2.carrier || 'ORANGE'}
                               </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center justify-center w-6 h-6 bg-primary/10 rounded">
+                                  <Smartphone className="h-3 w-3 text-primary" />
+                                </div>
+                                <span className="text-sm font-medium">Main Device</span>
+                              </div>
                             </TableCell>
                             <TableCell>SIM 2</TableCell>
                             <TableCell>
