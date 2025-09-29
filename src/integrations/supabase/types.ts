@@ -189,6 +189,57 @@ export type Database = {
         }
         Relationships: []
       }
+      ussd_codes: {
+        Row: {
+          category: string | null
+          code: string
+          created_at: string
+          description: string | null
+          device: string | null
+          id: string
+          name: string
+          operator: string | null
+          result: string | null
+          sim: number | null
+          status: string | null
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          code: string
+          created_at?: string
+          description?: string | null
+          device?: string | null
+          id?: string
+          name: string
+          operator?: string | null
+          result?: string | null
+          sim?: number | null
+          status?: string | null
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          code?: string
+          created_at?: string
+          description?: string | null
+          device?: string | null
+          id?: string
+          name?: string
+          operator?: string | null
+          result?: string | null
+          sim?: number | null
+          status?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

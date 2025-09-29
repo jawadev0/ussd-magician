@@ -5,13 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { USSDCode } from "@/types/ussd";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface AddUSSDDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (ussdCode: Omit<USSDCode, 'id' | 'created_at'>) => void;
-  editingCode?: USSDCode | null;
+  onSuccess: () => void;
+  type: 'TOPUP' | 'ACTIVATION';
 }
 
 const CATEGORIES = [
@@ -23,72 +25,77 @@ const CATEGORIES = [
   "Other"
 ];
 
-const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialogProps) => {
+const AddUSSDDialog = ({ open, onOpenChange, onSuccess, type }: AddUSSDDialogProps) => {
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<{
     name: string;
     code: string;
-    type: 'TOPUP' | 'ACTIVATION';
     description: string;
     category: string;
     sim: 1 | 2;
-    operator: 'ORANGE' | 'INWI' | 'IAM';
+    operator: 'ORANGE' | 'INWI' | 'IAM' | '';
     device: string;
-    status: 'pending' | 'done' | 'failed';
   }>({
     name: "",
     code: "",
-    type: "TOPUP",
     description: "",
     category: "",
     sim: 1,
-    operator: "INWI",
+    operator: "",
     device: "",
-    status: "pending",
   });
 
   useEffect(() => {
-    if (editingCode) {
-      setFormData({
-        name: editingCode.name,
-        code: editingCode.code,
-        type: editingCode.type,
-        description: editingCode.description || "",
-        category: editingCode.category || "",
-        sim: editingCode.sim,
-        operator: editingCode.operator,
-        device: editingCode.device,
-        status: editingCode.status,
-      });
-    } else if (open) {
+    if (open) {
       setFormData({
         name: "",
         code: "",
-        type: "TOPUP",
         description: "",
         category: "",
         sim: 1,
-        operator: "INWI",
+        operator: "",
         device: "",
-        status: "pending",
       });
     }
-  }, [editingCode, open]);
+  }, [open]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.name && formData.code && formData.device) {
-      onSave({
-        name: formData.name,
-        code: formData.code,
-        type: formData.type,
-        description: formData.description,
-        category: formData.category,
-        sim: formData.sim,
-        operator: formData.operator,
-        device: formData.device,
-        status: formData.status,
+    if (!formData.name || !formData.code) return;
+
+    setIsSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('add-ussd-code', {
+        body: {
+          name: formData.name,
+          code: formData.code,
+          type: type,
+          description: formData.description || undefined,
+          category: formData.category || undefined,
+          sim: formData.sim,
+          operator: formData.operator || undefined,
+          device: formData.device || undefined,
+        }
       });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `${type === 'ACTIVATION' ? 'Activation' : 'Top-up'} code added successfully`,
+      });
+      onSuccess();
       onOpenChange(false);
+    } catch (error) {
+      console.error('Error adding code:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add USSD code",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -97,7 +104,7 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {editingCode ? "Edit USSD Code" : "Add New USSD Code"}
+            Add New {type === 'ACTIVATION' ? 'Activation' : 'Top-up'} Code
           </DialogTitle>
         </DialogHeader>
         
@@ -125,19 +132,6 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="type">Type *</Label>
-            <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value as 'TOPUP' | 'ACTIVATION' })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="TOPUP">TOPUP</SelectItem>
-                <SelectItem value="ACTIVATION">ACTIVATION</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
             <Label htmlFor="sim">SIM *</Label>
             <Select value={formData.sim.toString()} onValueChange={(value) => setFormData({ ...formData, sim: parseInt(value) as 1 | 2 })}>
               <SelectTrigger>
@@ -151,10 +145,10 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="operator">Operator *</Label>
-            <Select value={formData.operator} onValueChange={(value) => setFormData({ ...formData, operator: value as 'ORANGE' | 'INWI' | 'IAM' })}>
+            <Label htmlFor="operator">Operator</Label>
+            <Select value={formData.operator} onValueChange={(value) => setFormData({ ...formData, operator: value as 'ORANGE' | 'INWI' | 'IAM' | '' })}>
               <SelectTrigger>
-                <SelectValue placeholder="Select operator" />
+                <SelectValue placeholder="Select operator (optional)" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="INWI">INWI</SelectItem>
@@ -165,28 +159,13 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="device">Device *</Label>
+            <Label htmlFor="device">Device</Label>
             <Input
               id="device"
               value={formData.device}
               onChange={(e) => setFormData({ ...formData, device: e.target.value })}
-              placeholder="e.g., Samsung Galaxy S21"
-              required
+              placeholder="e.g., Samsung Galaxy S21 (optional)"
             />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
-            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value as 'pending' | 'done' | 'failed' })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
           
           <div className="space-y-2">
@@ -221,14 +200,15 @@ const AddUSSDDialog = ({ open, onOpenChange, onSave, editingCode }: AddUSSDDialo
         </form>
         
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>
             Cancel
           </Button>
           <Button 
             onClick={handleSubmit} 
-            disabled={!formData.name || !formData.code || !formData.device}
+            disabled={!formData.name || !formData.code || isSubmitting}
           >
-            {editingCode ? "Update" : "Add"} Code
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Add Code
           </Button>
         </DialogFooter>
       </DialogContent>

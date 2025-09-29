@@ -1,53 +1,84 @@
-import { useState } from "react";
-import { Edit, Trash2, Search, Play, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Edit, Trash2, Search, Play, Loader2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ussdService } from "@/services/ussdService";
+import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import AddUSSDDialog from "@/components/AddUSSDDialog";
+
+interface USSDCode {
+  id: string;
+  code: string;
+  name: string;
+  operator: string;
+  sim: number;
+  status: string;
+  amount?: string;
+  description?: string;
+  result?: string;
+}
 
 const Topup = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [executingCode, setExecutingCode] = useState<string | null>(null);
   const [ussdResult, setUssdResult] = useState<{ code: string; result: string } | null>(null);
+  const [topupCodes, setTopupCodes] = useState<USSDCode[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-  const [topupCodes, setTopupCodes] = useState([
-    {
-      id: '1',
-      code: '*555*100#',
-      operator: 'ORANGE',
-      sim: 'SIM 2',
-      status: 'pending',
-      amount: '100',
-      description: 'Mobile Credit Top-up'
+  useEffect(() => {
+    fetchTopupCodes();
+  }, []);
+
+  const fetchTopupCodes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('ussd_codes')
+        .select('*')
+        .eq('type', 'TOPUP')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTopupCodes(data || []);
+    } catch (error) {
+      console.error('Error fetching codes:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load top-up codes",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
-  const handleExecuteCode = async (code: string) => {
+  const handleExecuteCode = async (id: string, code: string) => {
     setExecutingCode(code);
     try {
-      const response = await ussdService.executeUSSDCode(code);
-      if (response.success) {
-        setUssdResult({ code, result: response.result || 'Code executed successfully' });
+      const { data, error } = await supabase.functions.invoke('execute-ussd-code', {
+        body: { code_id: id, ussd_code: code }
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        setUssdResult({ code, result: data.result });
+        await fetchTopupCodes();
         toast({
           title: "Success",
           description: "Top-up code executed successfully",
         });
-      } else {
-        toast({
-          title: "Error",
-          description: response.error || "Failed to execute top-up code",
-          variant: "destructive",
-        });
       }
     } catch (error) {
+      console.error('Execute error:', error);
       toast({
         title: "Error",
-        description: "An error occurred while executing the code",
+        description: "Failed to execute top-up code",
         variant: "destructive",
       });
     } finally {
@@ -55,28 +86,56 @@ const Topup = () => {
     }
   };
 
-  const handleDeleteTopupCode = (id: string) => {
-    setTopupCodes(prev => prev.filter(code => code.id !== id));
-    toast({
-      title: "Success",
-      description: "Top-up code deleted successfully",
-    });
+  const handleDeleteTopupCode = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('ussd_codes')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setTopupCodes(prev => prev.filter(code => code.id !== id));
+      toast({
+        title: "Success",
+        description: "Top-up code deleted successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete top-up code",
+        variant: "destructive",
+      });
+    }
   };
 
   const filteredTopupCodes = topupCodes.filter(code =>
     code.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.operator.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.sim.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.amount.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    code.operator?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    code.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (code.description && code.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Top-up Codes</h1>
-          <p className="text-sm text-muted-foreground">View and manage top-up codes</p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Top-up Codes</h1>
+            <p className="text-sm text-muted-foreground">Manage and execute top-up codes</p>
+          </div>
+          <Button onClick={() => setIsAddDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Code
+          </Button>
         </div>
         <Card>
           <CardContent className="pt-6 space-y-4">
@@ -95,8 +154,8 @@ const Topup = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Code</TableHead>
+                    <TableHead>Name</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead>Amount</TableHead>
                     <TableHead>Operator</TableHead>
                     <TableHead>SIM</TableHead>
                     <TableHead>Status</TableHead>
@@ -107,14 +166,14 @@ const Topup = () => {
                   {filteredTopupCodes.map((code) => (
                     <TableRow key={code.id}>
                       <TableCell className="font-mono">{code.code}</TableCell>
+                      <TableCell className="font-medium">{code.name}</TableCell>
                       <TableCell className="text-muted-foreground">{code.description || '-'}</TableCell>
-                      <TableCell>{code.amount} MAD</TableCell>
                       <TableCell>
                         <Badge variant={code.operator === 'INWI' ? 'default' : code.operator === 'ORANGE' ? 'secondary' : 'outline'}>
                           {code.operator}
                         </Badge>
                       </TableCell>
-                      <TableCell>{code.sim}</TableCell>
+                      <TableCell>{code.sim ? `SIM ${code.sim}` : '-'}</TableCell>
                       <TableCell>
                         <Badge variant="secondary">{code.status}</Badge>
                       </TableCell>
@@ -123,7 +182,7 @@ const Topup = () => {
                           <Button 
                             variant="default" 
                             size="sm"
-                            onClick={() => handleExecuteCode(code.code)}
+                            onClick={() => handleExecuteCode(code.id, code.code)}
                             disabled={executingCode === code.code}
                           >
                             {executingCode === code.code ? (
@@ -171,6 +230,13 @@ const Topup = () => {
             </div>
           </DialogContent>
         </Dialog>
+
+        <AddUSSDDialog
+          open={isAddDialogOpen}
+          onOpenChange={setIsAddDialogOpen}
+          onSuccess={fetchTopupCodes}
+          type="TOPUP"
+        />
       </div>
     </div>
   );
