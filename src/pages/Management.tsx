@@ -702,36 +702,102 @@ const Management = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell className="font-medium">+212 6XX XXX XXX</TableCell>
-                        <TableCell>
-                          <Badge>INWI</Badge>
-                        </TableCell>
-                        <TableCell>SIM 1</TableCell>
-                        <TableCell>
-                          <Badge variant="default">Active</Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">5/20</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm" className="text-destructive">Remove</Button>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="font-medium">+212 7XX XXX XXX</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">ORANGE</Badge>
-                        </TableCell>
-                        <TableCell>SIM 2</TableCell>
-                        <TableCell>
-                          <Badge variant="default">Active</Badge>
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">12/20</TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm" className="text-destructive">Remove</Button>
-                        </TableCell>
-                      </TableRow>
+                      {simStatus && (
+                        <>
+                          <TableRow>
+                            <TableCell className="font-medium">
+                              {simStatus.sim1.phoneNumber || "+212 6XX XXX XXX"}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={simStatus.sim1.carrier === 'INWI' ? 'default' : simStatus.sim1.carrier === 'ORANGE' ? 'secondary' : 'outline'}>
+                                {simStatus.sim1.carrier || 'INWI'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>SIM 1</TableCell>
+                            <TableCell>
+                              <Badge variant={simStatus.sim1.isActive ? 'default' : 'destructive'}>
+                                {simStatus.sim1.isActive ? 'Active' : 'Inactive'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {simStatus.sim1.dailyOperations || 5}/{simStatus.sim1.operationsLimit || 20}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                {simStatus.sim1.isActive ? (
+                                  <Button 
+                                    variant="destructive" 
+                                    size="sm"
+                                    onClick={() => handleDeactivateSIM(1)}
+                                    disabled={simLoading.sim1}
+                                  >
+                                    <PowerOff className="h-4 w-4 mr-2" />
+                                    {simLoading.sim1 ? "Deactivating..." : "Deactivate"}
+                                  </Button>
+                                ) : (
+                                  <Button 
+                                    variant="default" 
+                                    size="sm"
+                                    onClick={() => handleActivateSIM(1)}
+                                    disabled={simLoading.sim1}
+                                  >
+                                    <Power className="h-4 w-4 mr-2" />
+                                    {simLoading.sim1 ? "Activating..." : "Activate"}
+                                  </Button>
+                                )}
+                                <Button variant="ghost" size="sm">Edit</Button>
+                                <Button variant="ghost" size="sm" className="text-destructive">Remove</Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-medium">
+                              {simStatus.sim2.phoneNumber || "+212 7XX XXX XXX"}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={simStatus.sim2.carrier === 'INWI' ? 'default' : simStatus.sim2.carrier === 'ORANGE' ? 'secondary' : 'outline'}>
+                                {simStatus.sim2.carrier || 'ORANGE'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>SIM 2</TableCell>
+                            <TableCell>
+                              <Badge variant={simStatus.sim2.isActive ? 'default' : 'destructive'}>
+                                {simStatus.sim2.isActive ? 'Active' : 'Inactive'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {simStatus.sim2.dailyOperations || 12}/{simStatus.sim2.operationsLimit || 20}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex items-center justify-end gap-2">
+                                {simStatus.sim2.isActive ? (
+                                  <Button 
+                                    variant="destructive" 
+                                    size="sm"
+                                    onClick={() => handleDeactivateSIM(2)}
+                                    disabled={simLoading.sim2}
+                                  >
+                                    <PowerOff className="h-4 w-4 mr-2" />
+                                    {simLoading.sim2 ? "Deactivating..." : "Deactivate"}
+                                  </Button>
+                                ) : (
+                                  <Button 
+                                    variant="default" 
+                                    size="sm"
+                                    onClick={() => handleActivateSIM(2)}
+                                    disabled={simLoading.sim2}
+                                  >
+                                    <Power className="h-4 w-4 mr-2" />
+                                    {simLoading.sim2 ? "Activating..." : "Activate"}
+                                  </Button>
+                                )}
+                                <Button variant="ghost" size="sm">Edit</Button>
+                                <Button variant="ghost" size="sm" className="text-destructive">Remove</Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        </>
+                      )}
                     </TableBody>
                   </Table>
                 </div>
