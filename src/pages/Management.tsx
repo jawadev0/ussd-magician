@@ -25,6 +25,12 @@ const Management = () => {
   const [simLoading, setSimLoading] = useState({ sim1: false, sim2: false });
   const [deviceLoading, setDeviceLoading] = useState({ device1: false });
 
+  // SIM Features state
+  const [simFeatures, setSimFeatures] = useState({
+    sim1: { topup: true, activation: true },
+    sim2: { topup: false, activation: true }
+  });
+
   // Form states
   const [activationForm, setActivationForm] = useState({
     code: '',
@@ -156,6 +162,23 @@ const Management = () => {
     } finally {
       setSimLoading(prev => ({ ...prev, [`sim${simNumber}`]: false }));
     }
+  };
+
+  const handleToggleSIMFeature = (simNumber: 1 | 2, feature: 'topup' | 'activation') => {
+    setSimFeatures(prev => ({
+      ...prev,
+      [`sim${simNumber}`]: {
+        ...prev[`sim${simNumber}` as keyof typeof prev],
+        [feature]: !prev[`sim${simNumber}` as keyof typeof prev][feature]
+      }
+    }));
+
+    const isEnabled = !simFeatures[`sim${simNumber}` as keyof typeof simFeatures][feature];
+    
+    toast({
+      title: "Success",
+      description: `${feature.charAt(0).toUpperCase() + feature.slice(1)} ${isEnabled ? 'enabled' : 'disabled'} for SIM ${simNumber}`,
+    });
   };
 
   const handleDeactivateSIM = async (simNumber: 1 | 2) => {
@@ -903,6 +926,8 @@ const Management = () => {
                         <TableHead>Slot</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Daily Ops</TableHead>
+                        <TableHead>Top-up</TableHead>
+                        <TableHead>Activation</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -926,6 +951,24 @@ const Management = () => {
                             </TableCell>
                             <TableCell className="text-muted-foreground">
                               {simStatus.sim1.dailyOperations || 5}/{simStatus.sim1.operationsLimit || 20}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant={simFeatures.sim1.topup ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleToggleSIMFeature(1, 'topup')}
+                              >
+                                {simFeatures.sim1.topup ? "Enabled" : "Disabled"}
+                              </Button>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant={simFeatures.sim1.activation ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleToggleSIMFeature(1, 'activation')}
+                              >
+                                {simFeatures.sim1.activation ? "Enabled" : "Disabled"}
+                              </Button>
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex items-center justify-end gap-2">
@@ -972,6 +1015,24 @@ const Management = () => {
                             </TableCell>
                             <TableCell className="text-muted-foreground">
                               {simStatus.sim2.dailyOperations || 12}/{simStatus.sim2.operationsLimit || 20}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant={simFeatures.sim2.topup ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleToggleSIMFeature(2, 'topup')}
+                              >
+                                {simFeatures.sim2.topup ? "Enabled" : "Disabled"}
+                              </Button>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant={simFeatures.sim2.activation ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => handleToggleSIMFeature(2, 'activation')}
+                              >
+                                {simFeatures.sim2.activation ? "Enabled" : "Disabled"}
+                              </Button>
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex items-center justify-end gap-2">
