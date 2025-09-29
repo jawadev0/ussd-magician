@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { CreditCard, ArrowLeft, Smartphone, Power, PowerOff, Search } from "lucide-react";
+import { Smartphone, Power, PowerOff, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,7 +12,6 @@ import { DualSIMStatus } from "@/types/ussd";
 import { ussdService } from "@/services/ussdService";
 
 const SimCards = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   
   const [simStatus, setSimStatus] = useState<DualSIMStatus | null>(null);
@@ -126,65 +124,13 @@ const SimCards = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-card border-b border-border sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" onClick={() => navigate("/management")}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
-              </Button>
-              <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-lg">
-                <CreditCard className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">SIM Cards</h1>
-                <p className="text-sm text-muted-foreground">Manage SIM cards and configurations</p>
-              </div>
-            </div>
-          </div>
+      <div className="container mx-auto px-4 py-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground">SIM Cards</h1>
+          <p className="text-sm text-muted-foreground">View and manage SIM cards</p>
         </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6">
         <Card>
-          <CardHeader>
-            <CardTitle>SIM Card Management</CardTitle>
-            <CardDescription>Manage SIM cards and their configurations</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label>Phone Number</Label>
-                <Input placeholder="+212 6XX XXX XXX" />
-              </div>
-              <div className="space-y-2">
-                <Label>Operator</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select operator" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="INWI">INWI</SelectItem>
-                    <SelectItem value="ORANGE">ORANGE</SelectItem>
-                    <SelectItem value="IAM">IAM</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>SIM Slot</Label>
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select slot" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">SIM 1</SelectItem>
-                    <SelectItem value="2">SIM 2</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <Button>Add SIM Card</Button>
+          <CardContent className="pt-6 space-y-4">
 
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -372,7 +318,7 @@ const SimCards = () => {
             </div>
           </CardContent>
         </Card>
-      </main>
+      </div>
     </div>
   );
 };
