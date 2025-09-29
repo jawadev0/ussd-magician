@@ -39,8 +39,20 @@ const Management = () => {
       code: '*100#',
       operator: 'INWI',
       sim: 'SIM 1',
-      status: 'Active',
+      status: 'pending',
       description: 'Balance Check'
+    }
+  ]);
+
+  const [topupCodes, setTopupCodes] = useState([
+    {
+      id: '1',
+      code: '*555*100#',
+      operator: 'ORANGE',
+      sim: 'SIM 2',
+      status: 'pending',
+      amount: '100',
+      description: 'Mobile Credit Top-up'
     }
   ]);
 
@@ -181,7 +193,7 @@ const Management = () => {
       code: activationForm.code,
       operator: activationForm.operator,
       sim: activationForm.sim,
-      status: 'Active',
+      status: 'pending',
       description: activationForm.description
     };
 
@@ -591,7 +603,7 @@ const Management = () => {
                           </TableCell>
                           <TableCell>{code.sim}</TableCell>
                           <TableCell>
-                            <Badge variant="default">{code.status}</Badge>
+                            <Badge variant="secondary">{code.status}</Badge>
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-2">
@@ -663,21 +675,31 @@ const Management = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell className="font-mono">*555*100#</TableCell>
-                        <TableCell>100 MAD</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">ORANGE</Badge>
-                        </TableCell>
-                        <TableCell>SIM 2</TableCell>
-                        <TableCell>
-                          <Badge variant="default">Active</Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button variant="ghost" size="sm">Edit</Button>
-                          <Button variant="ghost" size="sm" className="text-destructive">Delete</Button>
-                        </TableCell>
-                      </TableRow>
+                      {topupCodes.map((code) => (
+                        <TableRow key={code.id}>
+                          <TableCell className="font-mono">{code.code}</TableCell>
+                          <TableCell>{code.amount} MAD</TableCell>
+                          <TableCell>
+                            <Badge variant={code.operator === 'INWI' ? 'default' : code.operator === 'ORANGE' ? 'secondary' : 'outline'}>
+                              {code.operator}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{code.sim}</TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">{code.status}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <Button variant="ghost" size="sm">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </div>
