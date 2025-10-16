@@ -31,8 +31,8 @@ const USSDActivation = () => {
     // Validation
     if (!selectedOperator) {
       toast({
-        title: 'Error',
-        description: 'Please select an operator',
+        title: 'خطأ',
+        description: 'الرجاء اختيار المشغل',
         variant: 'destructive',
       });
       return;
@@ -40,8 +40,8 @@ const USSDActivation = () => {
 
     if (!phoneNumber || phoneNumber.length < 10) {
       toast({
-        title: 'Error',
-        description: 'Please enter a valid phone number',
+        title: 'خطأ',
+        description: 'الرجاء إدخال رقم هاتف صحيح',
         variant: 'destructive',
       });
       return;
@@ -49,8 +49,8 @@ const USSDActivation = () => {
 
     if (!activationCode || activationCode.length !== 4) {
       toast({
-        title: 'Error',
-        description: 'Please enter a 4-digit activation code',
+        title: 'خطأ',
+        description: 'الرجاء إدخال رمز تفعيل مكون من 4 أرقام',
         variant: 'destructive',
       });
       return;
@@ -68,14 +68,14 @@ const USSDActivation = () => {
       if (result.success) {
         setResponse(result.result);
         toast({
-          title: 'Success',
-          description: 'Activation request completed',
+          title: 'نجح',
+          description: 'تم إكمال طلب التفعيل',
         });
       } else {
         setResponse(result.error || 'Activation failed');
         toast({
-          title: 'Error',
-          description: result.error || 'Activation failed',
+          title: 'خطأ',
+          description: result.error || 'فشل التفعيل',
           variant: 'destructive',
         });
       }
@@ -83,7 +83,7 @@ const USSDActivation = () => {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred';
       setResponse(errorMessage);
       toast({
-        title: 'Error',
+        title: 'خطأ',
         description: errorMessage,
         variant: 'destructive',
       });
@@ -107,21 +107,21 @@ const USSDActivation = () => {
           onClick={() => navigate('/')}
           className="mb-6"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Home
+          <ArrowLeft className="ml-2 h-4 w-4" />
+          العودة للرئيسية
         </Button>
 
         <Card>
           <CardHeader>
-            <CardTitle>USSD Activation</CardTitle>
+            <CardTitle>تفعيل USSD</CardTitle>
             <CardDescription>
-              Select your operator, enter your phone number and activation code
+              اختر المشغل الخاص بك، أدخل رقم الهاتف ورمز التفعيل
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Operator Selection */}
             <div className="space-y-3">
-              <Label>Select Operator</Label>
+              <Label>اختر المشغل</Label>
               <div className="grid grid-cols-3 gap-4">
                 {operators.map((operator) => (
                   <button
@@ -139,7 +139,6 @@ const USSDActivation = () => {
                       alt={operator.name}
                       className="w-full h-24 object-contain"
                     />
-                    <p className="mt-2 text-sm font-medium text-center">{operator.name}</p>
                   </button>
                 ))}
               </div>
@@ -147,11 +146,11 @@ const USSDActivation = () => {
 
             {/* Phone Number Input */}
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone">رقم الهاتف</Label>
               <Input
                 id="phone"
                 type="tel"
-                placeholder="Enter phone number"
+                placeholder="أدخل رقم الهاتف"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 disabled={isLoading}
@@ -161,11 +160,11 @@ const USSDActivation = () => {
 
             {/* Activation Code Input */}
             <div className="space-y-2">
-              <Label htmlFor="code">Activation Code (4 digits)</Label>
+              <Label htmlFor="code">رمز التفعيل (4 أرقام)</Label>
               <Input
                 id="code"
                 type="text"
-                placeholder="Enter 4-digit code"
+                placeholder="أدخل رمز مكون من 4 أرقام"
                 value={activationCode}
                 onChange={(e) => {
                   const value = e.target.value.replace(/\D/g, '');
@@ -187,11 +186,11 @@ const USSDActivation = () => {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Activating...
+                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    جاري التفعيل...
                   </>
                 ) : (
-                  'Activate'
+                  'تفعيل'
                 )}
               </Button>
               <Button
@@ -199,7 +198,7 @@ const USSDActivation = () => {
                 onClick={handleReset}
                 disabled={isLoading}
               >
-                Reset
+                إعادة تعيين
               </Button>
             </div>
 
@@ -207,7 +206,7 @@ const USSDActivation = () => {
             {response && (
               <Card className="bg-muted">
                 <CardHeader>
-                  <CardTitle className="text-lg">Response</CardTitle>
+                  <CardTitle className="text-lg">الاستجابة</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm">{response}</p>
