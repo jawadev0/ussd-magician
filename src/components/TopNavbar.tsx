@@ -2,13 +2,13 @@ import { Smartphone, CreditCard, Zap, Users, Home, Phone } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 const navItems = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Devices", url: "/devices", icon: Smartphone },
-  { title: "SIM Cards", url: "/simcards", icon: CreditCard },
-  { title: "Activation", url: "/activation", icon: Zap },
-  { title: "Top-up", url: "/topup", icon: CreditCard },
-  { title: "USSD Activation", url: "/ussd-activation", icon: Phone },
-  { title: "Users", url: "/users", icon: Users },
+  { title: "الرئيسية", url: "/", icon: Home },
+  { title: "الأجهزة", url: "/devices", icon: Smartphone },
+  { title: "شرائح SIM", url: "/simcards", icon: CreditCard },
+  { title: "التفعيل", url: "/activation", icon: Zap },
+  { title: "الشحن", url: "/topup", icon: CreditCard },
+  { title: "تفعيل USSD", url: "/ussd-activation", icon: Phone },
+  { title: "المستخدمين", url: "/users", icon: Users },
 ];
 
 export function TopNavbar() {
@@ -22,7 +22,7 @@ export function TopNavbar() {
               <Smartphone className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              USSD Manager
+              مدير USSD
             </h1>
           </div>
 

@@ -7,17 +7,17 @@ const Index = () => {
   const navigate = useNavigate();
 
   const stats = [
-    { icon: Smartphone, label: "Active Devices", value: "1", color: "text-blue-500", bg: "bg-blue-50" },
-    { icon: CreditCard, label: "SIM Cards", value: "2", color: "text-purple-500", bg: "bg-purple-50" },
-    { icon: Activity, label: "Operations Today", value: "17", color: "text-green-500", bg: "bg-green-50" },
-    { icon: TrendingUp, label: "Success Rate", value: "98%", color: "text-orange-500", bg: "bg-orange-50" },
+    { icon: Smartphone, label: "الأجهزة النشطة", value: "1", color: "text-blue-500", bg: "bg-blue-50" },
+    { icon: CreditCard, label: "شرائح SIM", value: "2", color: "text-purple-500", bg: "bg-purple-50" },
+    { icon: Activity, label: "العمليات اليوم", value: "17", color: "text-green-500", bg: "bg-green-50" },
+    { icon: TrendingUp, label: "معدل النجاح", value: "98%", color: "text-orange-500", bg: "bg-orange-50" },
   ];
 
   const quickActions = [
-    { icon: Phone, title: "USSD Activation", description: "Activate new SIM cards", path: "/ussd-activation", color: "bg-gradient-to-br from-blue-500 to-blue-600" },
-    { icon: Smartphone, title: "Devices", description: "Manage your devices", path: "/devices", color: "bg-gradient-to-br from-purple-500 to-purple-600" },
-    { icon: Zap, title: "Activation Codes", description: "View activation codes", path: "/activation", color: "bg-gradient-to-br from-green-500 to-green-600" },
-    { icon: CreditCard, title: "Top-up", description: "Manage top-up codes", path: "/topup", color: "bg-gradient-to-br from-orange-500 to-orange-600" },
+    { icon: Phone, title: "تفعيل USSD", description: "تفعيل شرائح SIM الجديدة", path: "/ussd-activation", color: "bg-gradient-to-br from-blue-500 to-blue-600" },
+    { icon: Smartphone, title: "الأجهزة", description: "إدارة أجهزتك", path: "/devices", color: "bg-gradient-to-br from-purple-500 to-purple-600" },
+    { icon: Zap, title: "أكواد التفعيل", description: "عرض أكواد التفعيل", path: "/activation", color: "bg-gradient-to-br from-green-500 to-green-600" },
+    { icon: CreditCard, title: "الشحن", description: "إدارة أكواد الشحن", path: "/topup", color: "bg-gradient-to-br from-orange-500 to-orange-600" },
   ];
 
   return (
@@ -26,10 +26,10 @@ const Index = () => {
         {/* Hero Section */}
         <div className="text-center space-y-4 py-8 animate-fade-in">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
-            USSD Manager
+            مدير USSD
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Manage your mobile operations with ease. Control devices, SIM cards, and USSD codes from one powerful dashboard.
+            أدر عمليات الهاتف المحمول بسهولة. تحكم في الأجهزة وشرائح SIM وأكواد USSD من لوحة تحكم واحدة قوية.
           </p>
         </div>
 
@@ -57,7 +57,7 @@ const Index = () => {
 
         {/* Quick Actions */}
         <div className="space-y-4 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-          <h2 className="text-2xl font-bold">Quick Actions</h2>
+          <h2 className="text-2xl font-bold">الإجراءات السريعة</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {quickActions.map((action, index) => {
               const Icon = action.icon;
@@ -86,15 +86,15 @@ const Index = () => {
         {/* Recent Activity */}
         <div className="space-y-4 animate-fade-in" style={{ animationDelay: "0.3s" }}>
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Recent Activity</h2>
-            <Button variant="ghost" onClick={() => navigate("/devices")}>View All</Button>
+            <h2 className="text-2xl font-bold">النشاط الأخير</h2>
+            <Button variant="ghost" onClick={() => navigate("/devices")}>عرض الكل</Button>
           </div>
           <Card className="border-0 gradient-card">
             <CardContent className="p-6 space-y-4">
               {[
-                { action: "SIM 1 activated", time: "2 hours ago", status: "success" },
-                { action: "Balance check completed", time: "5 hours ago", status: "success" },
-                { action: "Top-up processed", time: "1 day ago", status: "success" },
+                { action: "تم تفعيل SIM 1", time: "منذ ساعتين", status: "نجح" },
+                { action: "تم فحص الرصيد", time: "منذ 5 ساعات", status: "نجح" },
+                { action: "تمت عملية الشحن", time: "منذ يوم واحد", status: "نجح" },
               ].map((activity, index) => (
                 <div key={index} className="flex items-center justify-between py-3 border-b last:border-0">
                   <div className="flex items-center gap-3">
@@ -105,7 +105,7 @@ const Index = () => {
                     </div>
                   </div>
                   <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    activity.status === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    activity.status === 'نجح' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                   }`}>
                     {activity.status}
                   </div>
